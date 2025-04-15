@@ -16,4 +16,11 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+//Routes
+import workspaceRouter from "./routes/workspace.route";
+import userRouter from "./routes/user.route";
+
+app.use("/api/workspace/", workspaceRouter);
+app.use("/api/user", userRouter);
+
 export { app };

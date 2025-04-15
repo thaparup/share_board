@@ -5,6 +5,7 @@ const registerUserSchema = z.object({
   email: z
     .string({ required_error: "Email is required" })
     .email({ message: "Invalid email address" }),
+
   avatarImage: z.string().optional(),
 
   password: z
@@ -12,4 +13,10 @@ const registerUserSchema = z.object({
     .min(5, { message: "Must be 5 or more characters long" }),
 });
 
-export { registerUserSchema };
+const loginSchema = z.object({
+  email: z.string().email().nonempty(),
+  password: z.string().nonempty(),
+});
+
+type RegisterUserType = z.infer<typeof registerUserSchema>;
+export { registerUserSchema, loginSchema, RegisterUserType };
