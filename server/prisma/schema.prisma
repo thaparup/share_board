@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URI")
+}
+
+model User {
+  id            String            @id @default(cuid())
+  name          String
+  email         String            @unique
+  password      String
+  avatarImage   String?
+  workspaceuser WorkspaceMember[]
+  task          Task[]
+  assignments   TaskAssignment[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @default(now())
+}
+
+model Task {
+  id            String    @id @default(cuid())
+  name          String
+  description   String
+  priority      Priority
+  workspace     Workspace @relation("workspace", fields: [workspaceid], references: [id])
+  workspaceid   String
+  taskcreator   User      @relation(fields: [taskcreatorid], references: [id])
+  taskcreatorid String
+
+  duedate        DateTime         @default(now())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  TaskAssignment TaskAssignment[]
+}
+
+model TaskAssignment {
+  id           String   @id @default(cuid())
+  assignedTask Task     @relation(fields: [taskId], references: [id])
+  taskId       String
+  assignedUser User     @relation(fields: [userId], references: [id])
+  userId       String
+  assignedAt   DateTime @default(now())
+}
+
+model Workspace {
+  id String @id @default(cuid())
+
+  workspacemember WorkspaceMember[]
+  tasks           Task[]            @relation("workspace")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceid], references: [id])
+  workspaceid String
+  member      User      @relation(fields: [memberid], references: [id])
+  memberid    String
+  role        ROLE      @default(MEMBER)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ROLE {
+  ADMIN
+  MEMBER
+}
