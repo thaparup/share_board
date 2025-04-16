@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 import {
   loginSchema,
   registerUserSchema,
@@ -7,7 +7,8 @@ import {
 import { PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
 import { SignJWT } from "jose";
-
+import { serialize } from "cookie";
+import { ALG, COOKIE, COOKIE_NAME, KEY } from "../utils/auth";
 const prisma = new PrismaClient();
 
 export async function createUser(req: Request, res: Response): Promise<any> {
@@ -71,37 +72,40 @@ export async function loginUser(req: Request, res: Response): Promise<any> {
     );
     if (!isPasswordValid)
       return res.status(400).json({ message: "User credentails is not valid" });
-
-    const alg = "HS256";
-    const key = new TextEncoder().encode(process.env.SECRET_TOKEN);
-    const session = await new SignJWT({
+    const jwt = await new SignJWT({
       id: existedUser.id,
     })
-      .setProtectedHeader({ alg })
+      .setProtectedHeader({ alg: ALG })
       .setIssuedAt()
       .setExpirationTime(`${process.env.JWT_EXP}s`)
-      .sign(key);
-    const options = {
-      httpOnly: true,
-      secure: true,
-      maxAge: Number(process.env.JWT_EXP),
-    };
+      .sign(KEY);
 
-    return res
-      .cookie("session", session, options)
-      .status(200)
-      .json({
-        message: "User logged in successfuly",
-        data: {
-          id: existedUser.id,
-          name: existedUser.name,
-          email: existedUser.name,
-          avatarImage: existedUser.avatarImage,
-        },
-      });
+    const session = serialize(COOKIE_NAME, jwt, COOKIE);
+    res.setHeader("Set-Cookie", session);
+    return res.status(200).json({
+      message: "User logged in successfuly",
+      data: {
+        id: existedUser.id,
+        name: existedUser.name,
+        email: existedUser.name,
+        avatarImage: existedUser.avatarImage,
+      },
+    });
   } catch (error) {
     return res
       .json({ message: "Something went well while user logging in" })
       .status(500);
+  }
+}
+
+export async function logoutUser(req: Request, res: Response) {
+  try {
+    const expiredSession = serialize(COOKIE_NAME, "", { ...COOKIE, maxAge: 0 });
+
+    res.setHeader("Set-Cookie", expiredSession);
+
+    res.status(200).json({ message: "User logged out" });
+  } catch (error) {
+    res.status(500).json({ message: "Logout failed" });
   }
 }

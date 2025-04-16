@@ -23,7 +23,7 @@
     "@types/express": "^5.0.1",
     "@types/pg": "^8.11.12",
     "bcrypt": "^5.1.1",
-    "cookie-parser": "^1.4.7",
+    "cookie": "^1.0.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jose": "^6.0.10",
