@@ -8,62 +8,78 @@ datasource db {
 }
 
 model User {
-  id             String            @id @default(cuid())
-  name           String
-  email          String            @unique
-  password       String
-  avatarImage    String?
-  workspaceuser  WorkspaceMember[]
-  task           Task[]
-  assignments    TaskAssignment[]
-  workspaceowner Workspace[]
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @default(now())
+  id              String            @id @default(cuid())
+  name            String
+  email           String            @unique
+  password        String
+  avatarImage     String?
+  workspaceMember WorkspaceMember[]
+  task            Task[]
+  assignments     TaskAssignment[]
+  workspace       Workspace[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now())
 }
 
 model Task {
-  id            String    @id @default(cuid())
-  name          String
-  description   String
-  priority      Priority
-  workspace     Workspace @relation("workspace", fields: [workspaceid], references: [id])
-  workspaceid   String
-  taskcreator   User      @relation(fields: [taskcreatorid], references: [id])
-  taskcreatorid String
-
-  duedate        DateTime         @default(now())
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  TaskAssignment TaskAssignment[]
+  id                String              @id @default(cuid())
+  name              String
+  description       String
+  priority          Priority
+  progress          Progress
+  workspace         Workspace           @relation("workspace", fields: [workspaceId], references: [id])
+  workspaceId       String
+  taskCreator       User                @relation(fields: [taskCreatorId], references: [id])
+  taskCreatorId     String
+  taskCreatorName   String
+  taskCreatorEmail  String
+  TaskTodoCheckList TaskTodoCheckList[]
+  dueDate           DateTime
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  TaskAssignment    TaskAssignment[]
 }
 
 model TaskAssignment {
-  id           String   @id @default(cuid())
-  assignedTask Task     @relation(fields: [taskId], references: [id])
-  taskId       String
-  assignedUser User     @relation(fields: [userId], references: [id])
-  userId       String
-  assignedAt   DateTime @default(now())
+  id                String   @id @default(cuid())
+  assignedTask      Task     @relation(fields: [taskId], references: [id])
+  taskId            String
+  assignedUser      User     @relation(fields: [assignedUserId], references: [id])
+  assignedUserId    String
+  assignedUserName  String
+  assignedUserEmail String
+  assignedAt        DateTime @default(now())
+}
+
+model TaskTodoCheckList {
+  id          String    @id @default(cuid())
+  name        String
+  checked     Boolean   @default(false)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  Task        Task?     @relation(fields: [taskId], references: [id])
+  taskId      String?
 }
 
 model Workspace {
-  id                 String            @id @default(cuid())
+  id                 String              @id @default(cuid())
   name               String
-  workspacecreator   User              @relation(fields: [workspacecreatorid], references: [id])
-  workspacecreatorid String
-  workspacemember    WorkspaceMember[]
-  tasks              Task[]            @relation("workspace")
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+  workspaceCreator   User                @relation(fields: [workspaceCreatorId], references: [id])
+  workspaceCreatorId String
+  workspaceMember    WorkspaceMember[]
+  tasks              Task[]              @relation("workspace")
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  TaskTodoCheckList  TaskTodoCheckList[]
 }
 
 model WorkspaceMember {
   id          String    @id @default(cuid())
-  workspace   Workspace @relation(fields: [workspaceid], references: [id])
-  workspaceid String
-  member      User      @relation(fields: [memberid], references: [id])
-  memberid    String
-  role        ROLE      @default(MEMBER)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  member      User      @relation(fields: [memberId], references: [id])
+  memberId    String
+  role        Role      @default(MEMBER)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -74,7 +90,13 @@ enum Priority {
   HIGH
 }
 
-enum ROLE {
+enum Role {
   ADMIN
   MEMBER
+}
+
+enum Progress {
+  IN_PROGRESS
+  COMPLETED
+  PENDING
 }
