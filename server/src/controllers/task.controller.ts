@@ -112,3 +112,118 @@ export async function createTask(req: Request, res: Response) {
     return;
   }
 }
+
+export async function updateTask(req: Request, res: Response) {
+  try {
+    const user = req.user;
+    const taskId = req.params.taskId;
+    const workspaceId = req.params.workspaceId;
+
+    if (!taskId) {
+      res.status(400).json({ message: "No task found" });
+      return;
+    }
+    if (!workspaceId) {
+      res.status(400).json({ message: "No workspace found" });
+      return;
+    }
+
+    const existingTask = await prisma.task.findFirst({
+      where: {
+        id: taskId,
+        workspaceId: workspaceId,
+      },
+    });
+
+    if (!existingTask) {
+      res.status(400).json({ message: "No task found for the workspace" });
+      return;
+    }
+    const parsed = createTaskSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      res.status(400).json({
+        message: "Make sure required fields are not empty",
+        errors: parsed.error.errors,
+      });
+      return;
+    }
+
+    const {
+      name,
+      description,
+      priority,
+      dueDate,
+      progress,
+      checklist,
+      assignedTo,
+    } = parsed.data;
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedTask = await tx.task.update({
+        where: { id: existingTask.id },
+        data: {
+          name,
+          description,
+          priority,
+          dueDate,
+          progress,
+        },
+      });
+
+      await tx.taskTodoCheckList.deleteMany({
+        where: { taskId: existingTask.id },
+      });
+
+      if (Array.isArray(checklist) && checklist.length > 0) {
+        await tx.taskTodoCheckList.createMany({
+          data: checklist.map((item) => ({
+            name: item.name,
+            checked: item.checked ?? false,
+            workspaceId: existingTask.workspaceId,
+            taskId,
+          })),
+        });
+      }
+
+      const updatedChecklist = await tx.taskTodoCheckList.findMany({
+        where: { taskId: existingTask.id },
+      });
+
+      await tx.taskAssignment.deleteMany({
+        where: { taskId: existingTask.id },
+      });
+
+      if (Array.isArray(assignedTo) && assignedTo.length > 0) {
+        await tx.taskAssignment.createMany({
+          data: assignedTo.map((item) => ({
+            taskId: existingTask.id,
+            assignedUserId: item.id!,
+            assignedUserName: item.name!,
+            assignedUserEmail: item.email!,
+          })),
+        });
+      }
+
+      const updatedAssignedUsers = await tx.taskAssignment.findMany({
+        where: { taskId: existingTask.id },
+      });
+
+      return { updatedTask, updatedChecklist, updatedAssignedUsers };
+    });
+
+    res.status(200).json({
+      message: "Task updated successfully",
+      data: {
+        task: result.updatedTask,
+        taskTodo: result.updatedChecklist,
+        assignedUser: result.updatedAssignedUsers,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({
+      message: "Something went wrong while updating the task.",
+    });
+  }
+}
