@@ -26,7 +26,7 @@ function RouteComponent() {
     signupMutation.mutate(data, {
       onSuccess: (serverData) => {
         toast.success('Account created!')
-        console.log(serverData)
+
         reset()
         nav({ to: '/login' })
       },

@@ -112,3 +112,24 @@ export async function logoutUser(req: Request, res: Response) {
     res.status(500).json({ message: "Logout failed" });
   }
 }
+
+export async function fetchCurrentUser(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+    const existedUser = await prisma.user.findFirst({ where: { id: userId } });
+    if (!existedUser) {
+      res.status(400).json({ message: "No user found" });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Current user fetched",
+      data: {
+        id: existedUser.id,
+        name: existedUser.name,
+        email: existedUser.name,
+        avatarImage: existedUser.avatarImage,
+      },
+    });
+  } catch (error) {}
+}

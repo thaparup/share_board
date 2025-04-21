@@ -4,4 +4,25 @@ type SignupFormData = {
   password: string;
   avatarImage?: File;
 };
-export type { SignupFormData };
+
+type SigninFormData = {
+  email: string;
+  password: string;
+};
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  avatarImage: string;
+};
+
+type AuthStoreType = {
+  isAuthenticated: boolean;
+  user: User | null;
+  login: (user: User) => void;
+  logout: () => void;
+  fetchUser: () => Promise<void>;
+};
+
+export type { SignupFormData, SigninFormData, AuthStoreType, User };

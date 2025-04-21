@@ -1,6 +1,6 @@
 import axios from "axios";
-import { SignupFormData } from "../types/auth.types";
-import { useMutation } from "@tanstack/react-query";
+import { SigninFormData, SignupFormData } from "../types/auth.types";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const userSignup = async (formData: SignupFormData) => {
   try {
@@ -13,4 +13,28 @@ export const userSignup = async (formData: SignupFormData) => {
 
 export const useMutationUserSignup = () => {
   return useMutation({ mutationFn: userSignup });
+};
+
+export const userSignin = async (formData: SigninFormData) => {
+  try {
+    const response = await axios.post("/api/user/auth/login", formData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const useMutationSignin = () => useMutation({ mutationFn: userSignin });
+
+export const fetchCurrentUser = async () => {
+  try {
+    const response = await axios.post(
+      "/api/user/auth/current_user",
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Network response was not ok");
+  }
 };
