@@ -3,6 +3,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+console.log("from prisma client", process.env.POSTGRES_URI);
+console.log("from prisma client", Bun.env.POSTGRES_URI);
 async function main() {
   const hashedPassword = await bcrypt.hash("password", 10);
 
@@ -37,6 +39,9 @@ async function main() {
 main()
   .then(async () => {
     await prisma.$disconnect();
+
+    console.log("from prisma client", process.env.POSTGRES_URI);
+    console.log("from prisma client", Bun.env.POSTGRES_URI);
   })
   .catch(async (e) => {
     console.error(e);

@@ -4,15 +4,15 @@ import { SigninFormData } from '../types/auth.types';
 import { Button } from '../components/ui/button';
 import { useMutationSignin } from '../Api-Client/auth';
 import toast from 'react-hot-toast';
-import { useNavigate, } from '@tanstack/react-router';
+import { redirect, useNavigate, } from '@tanstack/react-router';
 import { useAuthStore } from '../store/auth.store';
 
 
 
 
 const SigninForm = () => {
-    const nav = useNavigate()
-    const { isAuthenticated, login } = useAuthStore()
+    const nav = useNavigate({ from: '/login' })
+    const { login } = useAuthStore()
     const {
         register,
         handleSubmit,
@@ -26,9 +26,8 @@ const SigninForm = () => {
         signinMutation.mutate(data, {
             onSuccess: (response) => {
 
+                nav({ to: '/dashboard' })
                 toast.success("user logged in successfuly")
-                login(response.data)
-                nav({ to: '/dashboard' });
 
             },
             onError: (response) => toast.error(response.message)

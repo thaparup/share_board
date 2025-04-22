@@ -4,9 +4,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --watch src/index.ts",
+    "dev": "bun --env-file=.env --watch src/index.ts",
+    "e2e": "bun --env-file=.env.test --watch src/index.ts",
     "db:seed": "bun prisma/seed.ts",
-    "db:migrate": "bunx prisma migrate dev"
+    "db:migrate": "bunx prisma migrate dev",
+    "db:migrate-test": "bunx --env-file=.env.test prisma migrate dev"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

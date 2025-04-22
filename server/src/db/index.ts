@@ -3,7 +3,7 @@ import { Pool } from "pg";
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URI,
 });
-
+console.log("env", Bun.env.POSTGRES_URI);
 const connectDb = async (): Promise<boolean> => {
   try {
     const client = await pool.connect();

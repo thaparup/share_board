@@ -21,5 +21,5 @@ function RouteComponent() {
 
 
 
-    return <div>Hello "/dashboard"!</div>;
+    return <div>Welcome to your dashboard</div>;
 }

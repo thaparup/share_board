@@ -47,6 +47,9 @@ export async function createUser(req: Request, res: Response) {
 
 export async function loginUser(req: Request, res: Response) {
   const parsed = loginSchema.safeParse(req.body);
+
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("DATABASE_URL:", process.env.POSTGRES_URI);
   if (!parsed.success) {
     res
       .status(400)
@@ -60,7 +63,7 @@ export async function loginUser(req: Request, res: Response) {
         email: parsed.data.email,
       },
     });
-
+    console.log(existedUser);
     if (!existedUser) {
       res.status(400).json({ message: "User credentails is not valid" });
       return;
