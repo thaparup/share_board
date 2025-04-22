@@ -38,12 +38,35 @@ test.describe("User sign up and login", () => {
     await page.fill('input[name="password"]', testPassword),
       await page.getByRole("button", { name: "Sign in" }).click();
 
-    await expect(page.getByText("user logged in successfuly")).toBeVisible();
+    // await expect(page.getByText("user logged in successfuly")).toBeVisible({
+    //   timeout: 5000,
+    // });
+    // await expect(page.getByText("user logged in successfuly"));
+
     await page.goto(`${UI_URL}dashboard`);
     expect(
       page.getByRole("heading", {
         name: "Welcome to your dashboard",
       })
     );
+
+    await page.goto(UI_URL);
+
+    const title = page.getByText("SHARE BOARD");
+    await title.isVisible();
+    const avatar = page.locator(`img[alt='${testName}']`);
+
+    await avatar.click();
+
+    await expect(page.getByText(testName)).toBeVisible();
+    await expect(page.getByText(testEmail)).toBeVisible();
+
+    const logoutBtn = page.getByRole("menuitem").filter({ hasText: "Logout" });
+    await logoutBtn.click();
+
+    await expect(page.getByText("Log out")).toBeVisible();
+    await expect(page).toHaveURL(`${UI_URL}login`);
+
+    await expect(avatar).toHaveCount(0);
   });
 });

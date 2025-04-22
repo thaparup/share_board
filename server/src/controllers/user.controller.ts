@@ -106,6 +106,7 @@ export async function loginUser(req: Request, res: Response) {
 
 export async function logoutUser(req: Request, res: Response) {
   try {
+    console.log("api called");
     const expiredSession = serialize(COOKIE_NAME, "", { ...COOKIE, maxAge: 0 });
 
     res.setHeader("Set-Cookie", expiredSession);

@@ -38,3 +38,22 @@ export const fetchCurrentUser = async () => {
     throw new Error("Network response was not ok");
   }
 };
+
+export const logoutUser = async () => {
+  try {
+    const response = await axios.post(
+      "/api/user/auth/logout",
+      {},
+      { withCredentials: true }
+    );
+
+    if (response.status !== 200) {
+      throw new Error("couldn't logout user");
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error(error + "couldn't logout user");
+  }
+};
+
+export const useMutationLogout = () => useMutation({ mutationFn: logoutUser });

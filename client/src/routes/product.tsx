@@ -5,5 +5,8 @@ export const Route = createFileRoute('/product')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/product"!</div>
+  return <div>
+    <h1>product</h1>
+    <img src="https://i.pravatar.cc/300" alt="random" />
+  </div>
 }

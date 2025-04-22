@@ -21,13 +21,19 @@ const SigninForm = () => {
         formState: { errors },
     } = useForm<SigninFormData>();
 
-    const signinMutation = useMutationSignin()
-    const onSubmit: SubmitHandler<SigninFormData> = (data) => {
-        signinMutation.mutate(data, {
-            onSuccess: (response) => {
 
-                nav({ to: '/dashboard' })
-                toast.success("user logged in successfuly")
+
+    const signinMutation = useMutationSignin()
+    const onSubmit: SubmitHandler<SigninFormData> = async (data) => {
+        signinMutation.mutate(data, {
+            onSuccess: async (response) => {
+
+                if (response?.data) {
+                    await login(response.data); // ✅ Update Zustand state
+                    nav({ to: '/dashboard' });        // ✅ Then navigate
+                    toast('User logged in successfully', { duration: 3000 });
+                }
+
 
             },
             onError: (response) => toast.error(response.message)
