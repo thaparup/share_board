@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap");
 
+/* *,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

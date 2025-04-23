@@ -27,11 +27,10 @@ const Navbar = () => {
             : names[0].substring(0, 2);
     };
 
-    console.log(isAuthenticated)
-    console.log(user)
+
     return (
-        <section className="">
-            <nav className="flex max-[400px]:flex-col max-[400px]:items-center max-[400px]:text-center justify-between px-8 py-2 border-b-[1px] border-gray-800/80 ">
+        <section className="h-full">
+            <nav className="px-8 h-full flex items-center max-[400px]:flex-col max-[400px]:items-center max-[400px]:text-center justify-between border-b-[1px] border-gray-800/80 ">
                 <h1 className='bungee-spice-regular text-2xl'>SHARE BOARD</h1>
                 {!isAuthenticated ? (
                     <div className='flex gap-3 items-center'>

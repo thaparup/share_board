@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import Body from '../components/Body';
 
 
 export const Route = createFileRoute('/dashboard')({
@@ -24,5 +25,9 @@ function RouteComponent() {
 
 
 
-    return <div>Welcome to your dashboard</div>;
+    return <Body>
+        <h1>
+            dashboard content
+        </h1>
+    </Body>
 }
