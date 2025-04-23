@@ -19,7 +19,7 @@ import workspaceRouter from "./routes/workspace.route";
 import userRouter from "./routes/user.route";
 import taskRouter from "./routes/task.route";
 
-app.use("/api/workspace/", workspaceRouter);
+app.use("/api/workspace", workspaceRouter);
 app.use("/api/user", userRouter);
 app.use("/api/task", taskRouter);
 

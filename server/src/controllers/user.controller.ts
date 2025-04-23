@@ -48,8 +48,6 @@ export async function createUser(req: Request, res: Response) {
 export async function loginUser(req: Request, res: Response) {
   const parsed = loginSchema.safeParse(req.body);
 
-  console.log("NODE_ENV:", process.env.NODE_ENV);
-  console.log("DATABASE_URL:", process.env.POSTGRES_URI);
   if (!parsed.success) {
     res
       .status(400)
@@ -106,7 +104,6 @@ export async function loginUser(req: Request, res: Response) {
 
 export async function logoutUser(req: Request, res: Response) {
   try {
-    console.log("api called");
     const expiredSession = serialize(COOKIE_NAME, "", { ...COOKIE, maxAge: 0 });
 
     res.setHeader("Set-Cookie", expiredSession);

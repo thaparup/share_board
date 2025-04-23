@@ -9,6 +9,7 @@ export const createWorkspace = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Unauthorized request" });
     return;
   }
+
   const { name } = req.body;
   if (!name) {
     res.status(400).json({ message: "name is empty" });
@@ -26,7 +27,7 @@ export const createWorkspace = async (req: Request, res: Response) => {
         },
       },
     });
-
+    console.log(newWorkspace);
     await prisma.workspaceMember.create({
       data: {
         workspace: {
@@ -41,7 +42,7 @@ export const createWorkspace = async (req: Request, res: Response) => {
         },
       },
     });
-    res.status(201).json({
+    res.status(200).json({
       message: "Workspace created",
       workspace: newWorkspace,
     });

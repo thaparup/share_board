@@ -17,7 +17,7 @@ const Sidebar = () => {
     const navigation = useNavigate()
     const menuItems = [
         { name: 'Dashboard', icon: <LayoutDashboard size={18} />, to: '/dashboard' },
-        { name: 'Workspace', icon: <Folder size={18} />, to: '/workspace' },
+        { name: 'Workspaces', icon: <Folder size={18} />, to: '/workspaces' },
         { name: 'Manage Tasks', icon: <CheckSquare size={18} />, to: '/tasks' },
         { name: 'Logout', icon: <LogOut size={18} />, to: '/logout' },
     ]
@@ -40,15 +40,7 @@ const Sidebar = () => {
                         <li key={name}>
                             <Link
                                 to={to}
-                                onClick={() => {
-                                    logoutMutation.mutate(undefined, {
-                                        onSuccess() {
-                                            toast.success('Log out')
-                                            navigation({ to: '/login' })
-                                            logout()
-                                        },
-                                    })
-                                }}
+
                                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-amber-100 text-gray-300/80 hover:text-amber-600 transition-colors font-medium"
                             >
                                 <span className="text-amber-600">{icon}</span>
