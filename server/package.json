@@ -6,13 +6,16 @@
   "scripts": {
     "dev": "bun --env-file=.env --watch src/index.ts",
     "e2e": "bun --env-file=.env.test --watch src/index.ts",
-    "db:seed": "bun prisma/seed.ts",
-    "db:migrate": "bunx prisma migrate dev",
-    "db:migrate-test": "bunx --env-file=.env.test prisma migrate dev"
+    "db:seed": "bun --env-file=.env prisma/seed.ts",
+    "db:seed:test": "bun --env-file=.env.test prisma/seed.ts",
+    "db:migrate": "bunx --env-file=.env prisma migrate dev",
+    "db:migrate:test": "dotenv -e .env.test prisma migrate dev",
+    "db:generate": "bunx prisma generate"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "latest",
+    "dotenv-cli": "^8.0.0",
     "prisma": "^6.6.0"
   },
   "peerDependencies": {

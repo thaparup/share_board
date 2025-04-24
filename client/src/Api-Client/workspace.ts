@@ -1,7 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { WorkspaceFormData } from "../types/workspace.types";
-import toast from "react-hot-toast";
+import {
+  WorkspaceFormData,
+  Workspaces,
+  WorkspacesResponse,
+} from "../types/workspace.types";
 
 const createWorkspace = async (formData: WorkspaceFormData) => {
   try {
@@ -22,3 +25,21 @@ const createWorkspace = async (formData: WorkspaceFormData) => {
 
 export const useMutationCreateWorkspace = () =>
   useMutation({ mutationFn: createWorkspace });
+
+const fetchAllWorkspace = async (): Promise<WorkspacesResponse> => {
+  try {
+    const response = await axios.get("/api/workspace", {
+      withCredentials: true,
+    });
+
+    if (response.status !== 200) {
+      throw new Error("couuld not fetch the workspace");
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error("Could not fetch data");
+  }
+};
+
+export const useQueryAllWorkspace = () =>
+  useQuery({ queryFn: fetchAllWorkspace, queryKey: ["workspaces"] });

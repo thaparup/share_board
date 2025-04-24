@@ -30,6 +30,7 @@ export const createWorkspace = async (req: Request, res: Response) => {
     console.log(newWorkspace);
     await prisma.workspaceMember.create({
       data: {
+        role: "ADMIN",
         workspace: {
           connect: {
             id: newWorkspace.id,
@@ -57,27 +58,98 @@ export const createWorkspace = async (req: Request, res: Response) => {
 export const getAllWorkspace = async (req: Request, res: Response) => {
   const userId = req.user?.id;
 
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
   try {
-    const workspaceMemberships = await prisma.workspaceMember.findMany({
+    const usersAllWorkspace = await prisma.workspaceMember.findMany({
       where: { memberId: userId },
-      select: { workspaceId: true },
+      select: { workspaceId: true, role: true },
     });
-    const workspaceIds = workspaceMemberships.map((wm) => wm.workspaceId);
 
-    if (workspaceIds.length === 0) {
-      res.status(200).json({ message: "No workspaces found", data: [] });
-      return;
+    if (usersAllWorkspace.length === 0) {
+      return res.status(200).json({ message: "No workspaces found", data: [] });
     }
-    const workspaces = await prisma.workspace.findMany({
-      where: { id: { in: workspaceIds } },
+
+    const adminWorkspaceIds = usersAllWorkspace
+      .filter((w) => w.role === "ADMIN")
+      .map((w) => w.workspaceId);
+
+    const memberWorkspaceIds = usersAllWorkspace
+      .filter((w) => w.role !== "ADMIN")
+      .map((w) => w.workspaceId);
+
+    const adminWorkspaces = await prisma.workspace.findMany({
+      where: { id: { in: adminWorkspaceIds } },
     });
 
-    res.status(200).json({ message: "Workspaces fetched", data: workspaces });
-    return;
+    const memberWorkspaces = await prisma.workspace.findMany({
+      where: { id: { in: memberWorkspaceIds } },
+    });
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        workspaceId: { in: [...adminWorkspaceIds, ...memberWorkspaceIds] },
+      },
+      select: {
+        workspaceId: true,
+        progress: true,
+      },
+    });
+
+    const members = await prisma.workspaceMember.findMany({
+      where: {
+        workspaceId: { in: [...adminWorkspaceIds, ...memberWorkspaceIds] },
+      },
+      select: {
+        workspaceId: true,
+      },
+    });
+
+    const taskMap: Record<string, number> = {};
+    tasks.forEach(({ workspaceId, progress }) => {
+      taskMap[workspaceId] = (taskMap[workspaceId] || 0) + 1;
+    });
+
+    const completedTaskForWorkspace: Record<string, number> = {};
+
+    tasks.forEach(({ workspaceId, progress }) => {
+      if (progress === "COMPLETED") {
+        completedTaskForWorkspace[workspaceId] =
+          (completedTaskForWorkspace[workspaceId] || 0) + 1;
+      }
+    });
+
+    const memberMap: Record<string, number> = {};
+    members.forEach(({ workspaceId }) => {
+      memberMap[workspaceId] = (memberMap[workspaceId] || 0) + 1;
+    });
+
+    const adminWorkspaceDetails = adminWorkspaces.map((ws) => ({
+      ...ws,
+      totalTasks: taskMap[ws.id] || 0,
+      totalMembers: memberMap[ws.id] || 0,
+      taskCompleted: completedTaskForWorkspace[ws.id] || 0,
+    }));
+
+    const memberWorkspaceDetails = memberWorkspaces.map((ws) => ({
+      ...ws,
+      totalTasks: taskMap[ws.id] || 0,
+      totalMembers: memberMap[ws.id] || 0,
+      taskCompleted: completedTaskForWorkspace[ws.id] || 0,
+    }));
+
+    return res.status(200).json({
+      message: "Workspaces fetched",
+      data: {
+        workspaceWhereUserIsAdmin: adminWorkspaceDetails,
+        workspaceWhereUserIsPartOf: memberWorkspaceDetails,
+      },
+    });
   } catch (error) {
     console.error("Failed to fetch workspaces:", error);
-    res.status(500).json({ message: "Internal server error" });
-    return;
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 

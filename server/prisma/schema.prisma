@@ -62,15 +62,16 @@ model TaskTodoCheckList {
 }
 
 model Workspace {
-  id                 String              @id @default(cuid())
-  name               String
-  workspaceCreator   User                @relation(fields: [workspaceCreatorId], references: [id])
-  workspaceCreatorId String
-  workspaceMember    WorkspaceMember[]
-  tasks              Task[]              @relation("workspace")
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  TaskTodoCheckList  TaskTodoCheckList[]
+  id                   String              @id @default(cuid())
+  name                 String
+  workspaceCreator     User                @relation(fields: [workspaceCreatorId], references: [id])
+  workspaceCreatorId   String
+  workspaceCreatorName String?
+  workspaceMember      WorkspaceMember[]
+  tasks                Task[]              @relation("workspace")
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  TaskTodoCheckList    TaskTodoCheckList[]
 }
 
 model WorkspaceMember {
