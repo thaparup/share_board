@@ -61,7 +61,7 @@ export async function loginUser(req: Request, res: Response) {
         email: parsed.data.email,
       },
     });
-    console.log(existedUser);
+
     if (!existedUser) {
       res.status(400).json({ message: "User credentails is not valid" });
       return;
@@ -89,7 +89,7 @@ export async function loginUser(req: Request, res: Response) {
       data: {
         id: existedUser.id,
         name: existedUser.name,
-        email: existedUser.name,
+        email: existedUser.email,
         avatarImage: existedUser.avatarImage,
       },
     });
@@ -133,4 +133,21 @@ export async function fetchCurrentUser(req: Request, res: Response) {
       },
     });
   } catch (error) {}
+}
+
+export async function getAllUsers(req: Request, res: Response) {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarImage: true,
+      },
+    });
+
+    res.status(200).json({ message: "all users", data: users });
+  } catch (error) {
+    res.status(400).json({ message: "users fetching failed" });
+  }
 }

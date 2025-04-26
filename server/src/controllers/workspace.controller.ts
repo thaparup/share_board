@@ -20,6 +20,7 @@ export const createWorkspace = async (req: Request, res: Response) => {
     const newWorkspace = await prisma.workspace.create({
       data: {
         name,
+        workspaceCreatorName: user.name,
         workspaceCreator: {
           connect: {
             id: user?.id,
@@ -59,7 +60,8 @@ export const getAllWorkspace = async (req: Request, res: Response) => {
   const userId = req.user?.id;
 
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized" });
+    return;
   }
 
   try {
@@ -67,10 +69,6 @@ export const getAllWorkspace = async (req: Request, res: Response) => {
       where: { memberId: userId },
       select: { workspaceId: true, role: true },
     });
-
-    if (usersAllWorkspace.length === 0) {
-      return res.status(200).json({ message: "No workspaces found", data: [] });
-    }
 
     const adminWorkspaceIds = usersAllWorkspace
       .filter((w) => w.role === "ADMIN")
@@ -140,34 +138,73 @@ export const getAllWorkspace = async (req: Request, res: Response) => {
       taskCompleted: completedTaskForWorkspace[ws.id] || 0,
     }));
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "Workspaces fetched",
       data: {
         workspaceWhereUserIsAdmin: adminWorkspaceDetails,
         workspaceWhereUserIsPartOf: memberWorkspaceDetails,
       },
     });
+    return;
   } catch (error) {
     console.error("Failed to fetch workspaces:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
+    return;
   }
 };
 
 export const getWorkspaceById = async (req: Request, res: Response) => {
   try {
-    const workspaceId = req.params;
+    const { workspaceId } = req.params;
     console.log(workspaceId);
+
     const workspace = await prisma.workspace.findFirst({
-      where: { id: workspaceId.id },
+      where: { id: workspaceId! },
     });
 
     if (!workspace) {
       res.status(400).json({ message: "no workspace found" });
       return;
     }
-    res
-      .status(200)
-      .json({ message: "The workspace are working on", data: workspace });
+
+    const members = await prisma.workspaceMember.findMany({
+      where: { id: workspace.id },
+    });
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        workspaceId: workspaceId,
+      },
+    });
+
+    const assignedUsers = await Promise.all(
+      tasks.map(async ({ id }) => {
+        const count = await prisma.taskAssignment.count({
+          where: {
+            taskId: id,
+          },
+        });
+
+        return { id, count };
+      })
+    );
+
+    const tasksInDetail = tasks.flatMap((task) => {
+      const matchedUsers = assignedUsers.filter((user) => user.id === task.id);
+      return matchedUsers.map((user) => ({
+        ...task,
+        totalMembers: user.count,
+      }));
+    });
+
+    res.status(200).json({
+      message: "Workspace fetched",
+      data: {
+        workspace: workspace,
+        tasks: tasksInDetail,
+        totalMembers: members.length,
+      },
+    });
     return;
   } catch (error) {
     console.error("Failed to fetch workspaces:", error);

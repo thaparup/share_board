@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
+  WorkspaceById,
   WorkspaceFormData,
   Workspaces,
   WorkspacesResponse,
@@ -42,4 +43,57 @@ const fetchAllWorkspace = async (): Promise<WorkspacesResponse> => {
 };
 
 export const useQueryAllWorkspace = () =>
-  useQuery({ queryFn: fetchAllWorkspace, queryKey: ["workspaces"] });
+  useQuery({
+    queryKey: ["workspaces"],
+    queryFn: fetchAllWorkspace,
+  });
+
+const fetchWorkspaceById = async (
+  workspaceId: string
+): Promise<WorkspaceById> => {
+  try {
+    console.log("workspace id", workspaceId);
+    const response = await axios.get("/api/workspace/" + workspaceId, {
+      withCredentials: true,
+    });
+
+    if (response.status !== 200) {
+      throw new Error("couuld not fetch the workspace");
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error("Could not fetch data");
+  }
+};
+
+export const useQueryFetchWorkspaceById = (workspaceId: string) =>
+  useQuery({
+    queryKey: ["workspacesById", workspaceId],
+    queryFn: () => fetchWorkspaceById(workspaceId),
+    enabled: !!workspaceId,
+  });
+
+const fetchAllTasksRelatedToWorkspaceId = async (workspaceId: string) => {
+  try {
+    console.log("workspace id", workspaceId);
+    const response = await axios.get("/api/task/" + workspaceId, {
+      withCredentials: true,
+    });
+
+    if (response.status !== 200) {
+      throw new Error("couuld not fetch the task");
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error("Could not fetch data");
+  }
+};
+
+export const useQueryFetchAllTasksRelatedToWorkspaceId = (
+  workspaceId: string
+) =>
+  useQuery({
+    queryKey: ["tasksOfWorkspaceId", workspaceId],
+    queryFn: () => fetchAllTasksRelatedToWorkspaceId(workspaceId),
+    enabled: !!workspaceId,
+  });

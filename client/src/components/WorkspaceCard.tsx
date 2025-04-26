@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { Users, Calendar, CheckSquare } from "lucide-react";
 
 type WorkspaceCardProps = {
+    workspaceId: string,
     name: string;
     workspaceCreatorName: string;
     createdAt: string;
@@ -12,6 +13,7 @@ type WorkspaceCardProps = {
 };
 
 const WorkspaceCard = ({
+    workspaceId,
     name,
     workspaceCreatorName,
     createdAt,
@@ -31,7 +33,7 @@ const WorkspaceCard = ({
     };
 
     return (
-        <Link to='.' className="flex rounded-2xl shadow-lg bg-gray-200 w-full max-w-sm overflow-hidden">
+        <Link to='/workspaces/$workspaceId' params={{ workspaceId }} className="flex rounded-2xl shadow-lg bg-gray-200 w-full max-w-sm overflow-hidden">
             {/* Left color strip */}
             <div className={`${getStatusColor()} w-2`}></div>
 

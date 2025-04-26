@@ -9,12 +9,6 @@ export async function getAllTasks(req: Request, res: Response) {
     const tasksOfAWorkspace = await prisma.task.findMany({
       where: { workspaceId: workspaceId },
     });
-    if (tasksOfAWorkspace.length === 0) {
-      res
-        .status(200)
-        .json({ message: "There is no task from this workspace yet!" });
-      return;
-    }
 
     res.status(200).json({
       message: "All tasks for the workspace",
@@ -78,21 +72,21 @@ export async function createTask(req: Request, res: Response) {
         where: { taskId: createdTask.id },
       });
 
-      if (Array.isArray(assignedTo) && assignedTo.length > 0) {
-        await tx.taskAssignment.createMany({
-          data: assignedTo.map((item) => ({
-            taskId: createdTask.id,
-            assignedUserId: item.id,
-            assignedUserName: item.name,
-            assignedUserEmail: item.email,
-          })),
-        });
-      }
-      const assignedUserList = await tx.taskAssignment.findMany({
-        where: { taskId: createdTask.id },
-      });
+      // if (Array.isArray(assignedTo) && assignedTo.length > 0) {
+      //   await tx.taskAssignment.createMany({
+      //     data: assignedTo.map((item) => ({
+      //       taskId: createdTask.id,
+      //       assignedUserId: item.id,
+      //       assignedUserName: item.name,
+      //       assignedUserEmail: item.email,
+      //     })),
+      //   });
+      // }
+      // const assignedUserList = await tx.taskAssignment.findMany({
+      //   where: { taskId: createdTask.id },
+      // });
 
-      return { createdTask, createdTodoList, assignedUserList };
+      return { createdTask, createdTodoList };
     });
 
     res.status(201).json({
@@ -100,7 +94,7 @@ export async function createTask(req: Request, res: Response) {
       data: {
         task: result.createdTask,
         taskTodo: result.createdTodoList,
-        assignedUser: result.assignedUserList,
+        // assignedUser: result.assignedUserList,
       },
     });
     return;

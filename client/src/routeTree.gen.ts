@@ -11,21 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as WorkspacesImport } from './routes/workspaces'
 import { Route as SignupImport } from './routes/signup'
 import { Route as ProductImport } from './routes/product'
 import { Route as LoginImport } from './routes/login'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as WorkspacesIndexImport } from './routes/workspaces/index'
+import { Route as WorkspacesWorkspaceIdImport } from './routes/workspaces/$workspaceId'
 
 // Create/Update Routes
-
-const WorkspacesRoute = WorkspacesImport.update({
-  id: '/workspaces',
-  path: '/workspaces',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const SignupRoute = SignupImport.update({
   id: '/signup',
@@ -60,6 +55,18 @@ const AboutRoute = AboutImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WorkspacesIndexRoute = WorkspacesIndexImport.update({
+  id: '/workspaces/',
+  path: '/workspaces/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WorkspacesWorkspaceIdRoute = WorkspacesWorkspaceIdImport.update({
+  id: '/workspaces/$workspaceId',
+  path: '/workspaces/$workspaceId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -109,11 +116,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
-    '/workspaces': {
-      id: '/workspaces'
+    '/workspaces/$workspaceId': {
+      id: '/workspaces/$workspaceId'
+      path: '/workspaces/$workspaceId'
+      fullPath: '/workspaces/$workspaceId'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/workspaces/': {
+      id: '/workspaces/'
       path: '/workspaces'
       fullPath: '/workspaces'
-      preLoaderRoute: typeof WorkspacesImport
+      preLoaderRoute: typeof WorkspacesIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -128,7 +142,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
-  '/workspaces': typeof WorkspacesRoute
+  '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
+  '/workspaces': typeof WorkspacesIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -138,7 +153,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
-  '/workspaces': typeof WorkspacesRoute
+  '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
+  '/workspaces': typeof WorkspacesIndexRoute
 }
 
 export interface FileRoutesById {
@@ -149,7 +165,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
-  '/workspaces': typeof WorkspacesRoute
+  '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
+  '/workspaces/': typeof WorkspacesIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -161,6 +178,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
+    | '/workspaces/$workspaceId'
     | '/workspaces'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -170,6 +188,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
+    | '/workspaces/$workspaceId'
     | '/workspaces'
   id:
     | '__root__'
@@ -179,7 +198,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
-    | '/workspaces'
+    | '/workspaces/$workspaceId'
+    | '/workspaces/'
   fileRoutesById: FileRoutesById
 }
 
@@ -190,7 +210,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ProductRoute: typeof ProductRoute
   SignupRoute: typeof SignupRoute
-  WorkspacesRoute: typeof WorkspacesRoute
+  WorkspacesWorkspaceIdRoute: typeof WorkspacesWorkspaceIdRoute
+  WorkspacesIndexRoute: typeof WorkspacesIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -200,7 +221,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ProductRoute: ProductRoute,
   SignupRoute: SignupRoute,
-  WorkspacesRoute: WorkspacesRoute,
+  WorkspacesWorkspaceIdRoute: WorkspacesWorkspaceIdRoute,
+  WorkspacesIndexRoute: WorkspacesIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -219,7 +241,8 @@ export const routeTree = rootRoute
         "/login",
         "/product",
         "/signup",
-        "/workspaces"
+        "/workspaces/$workspaceId",
+        "/workspaces/"
       ]
     },
     "/": {
@@ -240,8 +263,11 @@ export const routeTree = rootRoute
     "/signup": {
       "filePath": "signup.tsx"
     },
-    "/workspaces": {
-      "filePath": "workspaces.tsx"
+    "/workspaces/$workspaceId": {
+      "filePath": "workspaces/$workspaceId.tsx"
+    },
+    "/workspaces/": {
+      "filePath": "workspaces/index.tsx"
     }
   }
 }

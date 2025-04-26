@@ -10,6 +10,6 @@ const router = Router();
 
 router.post("/", verifyJwt, createWorkspace);
 router.get("/", verifyJwt, getAllWorkspace);
-router.get("/:id", verifyJwt, getWorkspaceById);
+router.get("/:workspaceId", verifyJwt, getWorkspaceById);
 
 export default router;

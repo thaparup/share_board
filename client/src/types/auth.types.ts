@@ -25,4 +25,15 @@ type AuthStoreType = {
   fetchUser: () => Promise<void>;
 };
 
-export type { SignupFormData, SigninFormData, AuthStoreType, User };
+type UsersResponse = {
+  message: string;
+  data: User[];
+};
+
+export type {
+  SignupFormData,
+  SigninFormData,
+  AuthStoreType,
+  User,
+  UsersResponse,
+};

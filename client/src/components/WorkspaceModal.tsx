@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -6,53 +6,70 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from './ui/dialog'
-import { Button } from './ui/button'
-import { useMutationCreateWorkspace } from '../Api-Client/workspace'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { WorkspaceFormData } from '../types/workspace.types'
-import toast from 'react-hot-toast'
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import {
+    useMutationCreateWorkspace,
+    useQueryAllWorkspace,
+} from "../Api-Client/workspace";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { WorkspaceFormData } from "../types/workspace.types";
+import toast from "react-hot-toast";
+import { queryClient } from "../main";
 
 const WorkspaceModal = () => {
-    const createWorkspaceMutation = useMutationCreateWorkspace()
-    const { register, handleSubmit } = useForm<WorkspaceFormData>()
+    const createWorkspaceMutation = useMutationCreateWorkspace();
+    const { register, handleSubmit, reset } = useForm<WorkspaceFormData>();
+    const [open, setOpen] = useState(false);
+
+    const workspacesQuery = useQueryAllWorkspace();
 
     const onClickMutate: SubmitHandler<WorkspaceFormData> = async (data) => {
         createWorkspaceMutation.mutate(data, {
             onSuccess: () => {
-                toast.success('Workspace created!')
+                toast.success("Workspace created!");
+                queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+
+                workspacesQuery.refetch();
+
+                reset();
+
+                setOpen(false);
             },
-        })
-    }
+            onError: (error) => {
+                toast.error("Failed to create workspace: " + error.message);
+            },
+        });
+    };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger
-                className='max-w-fit bg-amber-600 px-12 py-2 rounded-md font-medium'
+                className="max-w-fit bg-amber-600 px-12 py-2 rounded-md font-medium hover:cursor-pointer"
                 disabled={createWorkspaceMutation.isPending}
             >
                 Create Workspace
             </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle className='font-semibold'>
+            <DialogContent className="bg-black">
+                <DialogHeader className="py-8">
+                    <DialogTitle className="font-semibold">
                         Build the workspace where ideas come alive...
                     </DialogTitle>
-                    <DialogDescription className='mt-2'>
+                    <DialogDescription className="mt-2">
                         <form onSubmit={handleSubmit(onClickMutate)}>
                             <input
-                                type='text'
-                                placeholder='Give Your Workspace A Name'
-                                className='outline-none ring-1 ring-amber-600/80 rounded-xs p-2 w-full px placeholder:italic'
-                                {...register('name')}
+                                type="text"
+                                placeholder="Give Your Workspace A Name"
+                                className="outline-none ring-1 ring-amber-600/80 rounded-xs p-2 w-full px placeholder:italic"
+                                {...register("name", { required: true })}
                             />
-                            <div className='flex justify-center mt-4'>
+                            <div className="flex justify-center mt-4">
                                 <Button
-                                    type='submit'
-                                    className='px-8 text-md'
+                                    type="submit"
+                                    className="px-8 text-md hover:cursor-pointer"
                                     disabled={createWorkspaceMutation.isPending}
                                 >
-                                    {createWorkspaceMutation.isPending ? 'Creating...' : 'Create'}
+                                    {createWorkspaceMutation.isPending ? "Creating..." : "Create"}
                                 </Button>
                             </div>
                         </form>
@@ -60,7 +77,7 @@ const WorkspaceModal = () => {
                 </DialogHeader>
             </DialogContent>
         </Dialog>
-    )
-}
+    );
+};
 
-export default WorkspaceModal
+export default WorkspaceModal;

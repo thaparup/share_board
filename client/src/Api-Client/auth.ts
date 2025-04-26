@@ -1,5 +1,10 @@
 import axios from "axios";
-import { SigninFormData, SignupFormData } from "../types/auth.types";
+import {
+  SigninFormData,
+  SignupFormData,
+  User,
+  UsersResponse,
+} from "../types/auth.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const userSignup = async (formData: SignupFormData) => {
@@ -57,3 +62,19 @@ export const logoutUser = async () => {
 };
 
 export const useMutationLogout = () => useMutation({ mutationFn: logoutUser });
+
+export const fetchAllUsers = async (): Promise<UsersResponse> => {
+  try {
+    const response = await axios.get(
+      "/api/user/",
+
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Network response was not ok");
+  }
+};
+
+export const useQueryFetchAllUsers = () =>
+  useQuery({ queryKey: ["users"], queryFn: fetchAllUsers });

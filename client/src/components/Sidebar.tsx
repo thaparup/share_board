@@ -21,7 +21,6 @@ const Sidebar = () => {
         { name: 'Manage Tasks', icon: <CheckSquare size={18} />, to: '/tasks' },
         { name: 'Logout', icon: <LogOut size={18} />, to: '/logout' },
     ]
-
     return (
         <aside className="w-64  shadow-lg px-6 flex flex-col items-center border-[1px] border-slate-700/80 rounded-t-md">
             <div className="flex flex-col items-center gap-2 mt-8">
