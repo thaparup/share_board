@@ -4,3 +4,5 @@ export type Member = {
   memberEmail: string;
   memberAvatarImage: string;
 };
+
+export type CreateTaskFormData = {};

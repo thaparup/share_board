@@ -1,8 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useQueryFetchWorkspaceById } from '../../Api-Client/workspace';
-import TaskCards from '../../components/TaskCards';
-import Body from '../../components/Body';
-import WorkspaceMembersSection from '../../components/WorkspaceMembersSection';
+import { useQueryFetchWorkspaceById } from '../Api-Client/workspace';
+import TaskCards from '../components/TaskCards';
+import Body from '../components/Body';
+import WorkspaceMembersSection from '../components/WorkspaceMembersSection';
+import { Button } from '../components/ui/button';
+import { Plus } from 'lucide-react';
+import WorkspaceTask from '../components/WorkspaceTask';
 
 
 export const Route = createFileRoute('/workspaces/$workspaceId')({
@@ -20,6 +23,7 @@ export const Route = createFileRoute('/workspaces/$workspaceId')({
 
 function RouteComponent() {
   const { workspaceId } = Route.useLoaderData();
+  console.log('workspace id ', workspaceId)
 
   // Handle adding a member - this would typically open your modal
   const handleAddMemberClick = () => {
@@ -42,7 +46,7 @@ function RouteComponent() {
   // Show when data doesn't exist
   if (!workspace || !workspace.data) return <Body><div>No workspace data available</div></Body>;
 
-  console.log(workspace)
+
   return (
     <Body>
       <div className="container mx-auto px-4 py-8">
@@ -61,13 +65,20 @@ function RouteComponent() {
         />
 
         {/* Tasks Section */}
-        <div>
+        {/* <div className='mt-12'>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-white">Tasks</h2>
-            {/* Add Task button could go here */}
+            <Button
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md mr-8 flex items-center text-sm"
+
+            >
+              <Plus size={16} className="mr-1" />
+              Add Task
+            </Button>
+
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
             {workspace?.data.tasks.map((task) => (
               <TaskCards key={task.id} task={task} />
             ))}
@@ -82,7 +93,9 @@ function RouteComponent() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
+
+        <WorkspaceTask tasks={workspace.data.tasks} workspaceId={workspaceId} />
       </div>
     </Body>
   );

@@ -221,3 +221,56 @@ export async function updateTask(req: Request, res: Response) {
     });
   }
 }
+
+export async function getTaskById(req: Request, res: Response) {
+  try {
+    const user = req.user;
+    const taskId = req.params.taskId;
+    const workspaceId = req.params.workspaceId;
+
+    console.log("workspace ", workspaceId);
+    console.log("task ", taskId);
+    if (!taskId) {
+      res.status(400).json({ message: "No task found" });
+      return;
+    }
+    if (!workspaceId) {
+      res.status(400).json({ message: "No workspace found" });
+      return;
+    }
+
+    const existingTask = await prisma.task.findFirst({
+      where: {
+        id: taskId,
+        workspaceId: workspaceId,
+      },
+    });
+    console.log(existingTask);
+    if (!existingTask) {
+      res.status(400).json({ message: "No task found for the workspace" });
+      return;
+    }
+    const taskAssignedUser = await prisma.taskAssignment.findMany({
+      where: {
+        taskId: taskId,
+      },
+    });
+    const tastTodo = await prisma.taskTodoCheckList.findMany({
+      where: {
+        taskId: taskId,
+      },
+    });
+
+    res.status(200).json({
+      message: "task fetched",
+      data: {
+        task: existingTask,
+        assignedUser: taskAssignedUser,
+        taskTodo: tastTodo,
+      },
+    });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+}

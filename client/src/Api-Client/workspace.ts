@@ -3,7 +3,6 @@ import axios from "axios";
 import {
   WorkspaceById,
   WorkspaceFormData,
-  Workspaces,
   WorkspacesResponse,
 } from "../types/workspace.types";
 
@@ -65,6 +64,18 @@ const fetchWorkspaceById = async (
   }
 };
 
+export const useQueryFetchAllTasksRelatedToWorkspaceId = (
+  workspaceId: string
+) =>
+  useQuery({
+    queryKey: ["tasksOfWorkspaceId", workspaceId],
+    queryFn: () => {
+      console.log("Query function is running with workspaceId:", workspaceId);
+      return fetchWorkspaceById(workspaceId);
+    },
+    enabled: true,
+  });
+
 export const useQueryFetchWorkspaceById = (workspaceId: string) =>
   useQuery({
     queryKey: ["workspacesById", workspaceId],
@@ -90,15 +101,3 @@ const fetchAllTasksRelatedToWorkspaceId = async (workspaceId: string) => {
     throw new Error("Could not fetch data");
   }
 };
-
-export const useQueryFetchAllTasksRelatedToWorkspaceId = (
-  workspaceId: string
-) =>
-  useQuery({
-    queryKey: ["tasksOfWorkspaceId", workspaceId],
-    queryFn: () => {
-      console.log("Query function is running with workspaceId:", workspaceId);
-      return fetchWorkspaceById(workspaceId);
-    },
-    enabled: true,
-  });

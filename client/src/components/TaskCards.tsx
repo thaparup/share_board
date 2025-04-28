@@ -2,6 +2,8 @@ import { format } from "date-fns";
 import React from "react";
 import { Task } from "../types/task.types";
 import { Users, Calendar } from "lucide-react"; // ✅ Lucide icon: ;
+import { Link } from "@tanstack/react-router";
+
 
 export const priorityColors: Record<Task["priority"], string> = {
     HIGH: "bg-red-500",
@@ -37,15 +39,18 @@ export const getDaysRemaining = (dueDate: string) => {
 
 interface TaskCardProps {
     task: Task;
+
+    workspaceId: string,
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
     const daysRemaining = getDaysRemaining(task.dueDate);
     const isOverdue = daysRemaining === "Overdue";
-
+    const taskId = task.id
     return (
-        <div className="mb-4 bg-white rounded-lg shadow-md overflow-hidden flex">
-            <div className={`w-2 ${priorityColors[task.priority]}`}></div>
+        <Link to='/workspaces/$workspaceId/task/view/$taskId' params={{ taskId, workspaceId }} className="mb-4 bg-white  rounded-lg shadow-md overflow-hidden flex">
+            {/* <div className={`w-2 ${priorityColors[task.priority]}`}>{task.priority}</div> */}
+            <div className={`w-2 bg-indigo-600`}></div>
 
             <div className="flex-1 p-4">
                 <div className="flex justify-between items-start">
@@ -85,7 +90,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 

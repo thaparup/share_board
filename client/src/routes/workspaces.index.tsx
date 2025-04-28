@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Body from "../../components/Body";
-import WorkspaceModal from "../../components/WorkspaceModal";
-import WorkspaceCard from "../../components/WorkspaceCard";
-import { useQueryAllWorkspace } from "../../Api-Client/workspace";
+import Body from "../components/Body";
+import WorkspaceModal from "../components/WorkspaceModal";
+import WorkspaceCard from "../components/WorkspaceCard";
+import { useQueryAllWorkspace } from "../Api-Client/workspace";
 
 export const Route = createFileRoute("/workspaces/")({
   component: RouteComponent,

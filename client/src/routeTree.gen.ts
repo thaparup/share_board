@@ -17,8 +17,9 @@ import { Route as LoginImport } from './routes/login'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
-import { Route as WorkspacesIndexImport } from './routes/workspaces/index'
-import { Route as WorkspacesWorkspaceIdImport } from './routes/workspaces/$workspaceId'
+import { Route as WorkspacesIndexImport } from './routes/workspaces.index'
+import { Route as WorkspacesWorkspaceIdImport } from './routes/workspaces.$workspaceId'
+import { Route as WorkspacesWorkspaceIdTaskViewTaskIdImport } from './routes/workspaces_.$workspaceId.task.view.$taskId'
 
 // Create/Update Routes
 
@@ -69,6 +70,13 @@ const WorkspacesWorkspaceIdRoute = WorkspacesWorkspaceIdImport.update({
   path: '/workspaces/$workspaceId',
   getParentRoute: () => rootRoute,
 } as any)
+
+const WorkspacesWorkspaceIdTaskViewTaskIdRoute =
+  WorkspacesWorkspaceIdTaskViewTaskIdImport.update({
+    id: '/workspaces_/$workspaceId/task/view/$taskId',
+    path: '/workspaces/$workspaceId/task/view/$taskId',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -130,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspacesIndexImport
       parentRoute: typeof rootRoute
     }
+    '/workspaces_/$workspaceId/task/view/$taskId': {
+      id: '/workspaces_/$workspaceId/task/view/$taskId'
+      path: '/workspaces/$workspaceId/task/view/$taskId'
+      fullPath: '/workspaces/$workspaceId/task/view/$taskId'
+      preLoaderRoute: typeof WorkspacesWorkspaceIdTaskViewTaskIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -144,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
   '/workspaces': typeof WorkspacesIndexRoute
+  '/workspaces/$workspaceId/task/view/$taskId': typeof WorkspacesWorkspaceIdTaskViewTaskIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -155,6 +171,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
   '/workspaces': typeof WorkspacesIndexRoute
+  '/workspaces/$workspaceId/task/view/$taskId': typeof WorkspacesWorkspaceIdTaskViewTaskIdRoute
 }
 
 export interface FileRoutesById {
@@ -167,6 +184,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
   '/workspaces/': typeof WorkspacesIndexRoute
+  '/workspaces_/$workspaceId/task/view/$taskId': typeof WorkspacesWorkspaceIdTaskViewTaskIdRoute
 }
 
 export interface FileRouteTypes {
@@ -180,6 +198,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/workspaces/$workspaceId'
     | '/workspaces'
+    | '/workspaces/$workspaceId/task/view/$taskId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -190,6 +209,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/workspaces/$workspaceId'
     | '/workspaces'
+    | '/workspaces/$workspaceId/task/view/$taskId'
   id:
     | '__root__'
     | '/'
@@ -200,6 +220,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/workspaces/$workspaceId'
     | '/workspaces/'
+    | '/workspaces_/$workspaceId/task/view/$taskId'
   fileRoutesById: FileRoutesById
 }
 
@@ -212,6 +233,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   WorkspacesWorkspaceIdRoute: typeof WorkspacesWorkspaceIdRoute
   WorkspacesIndexRoute: typeof WorkspacesIndexRoute
+  WorkspacesWorkspaceIdTaskViewTaskIdRoute: typeof WorkspacesWorkspaceIdTaskViewTaskIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -223,6 +245,8 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   WorkspacesWorkspaceIdRoute: WorkspacesWorkspaceIdRoute,
   WorkspacesIndexRoute: WorkspacesIndexRoute,
+  WorkspacesWorkspaceIdTaskViewTaskIdRoute:
+    WorkspacesWorkspaceIdTaskViewTaskIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -242,7 +266,8 @@ export const routeTree = rootRoute
         "/product",
         "/signup",
         "/workspaces/$workspaceId",
-        "/workspaces/"
+        "/workspaces/",
+        "/workspaces_/$workspaceId/task/view/$taskId"
       ]
     },
     "/": {
@@ -264,10 +289,13 @@ export const routeTree = rootRoute
       "filePath": "signup.tsx"
     },
     "/workspaces/$workspaceId": {
-      "filePath": "workspaces/$workspaceId.tsx"
+      "filePath": "workspaces.$workspaceId.tsx"
     },
     "/workspaces/": {
-      "filePath": "workspaces/index.tsx"
+      "filePath": "workspaces.index.tsx"
+    },
+    "/workspaces_/$workspaceId/task/view/$taskId": {
+      "filePath": "workspaces_.$workspaceId.task.view.$taskId.tsx"
     }
   }
 }
