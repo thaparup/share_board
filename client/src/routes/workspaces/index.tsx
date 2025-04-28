@@ -10,7 +10,6 @@ export const Route = createFileRoute("/workspaces/")({
 
 function RouteComponent() {
   const { data, isLoading } = useQueryAllWorkspace();
-  console.log('workpsaces', data);
 
 
   return (

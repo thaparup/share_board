@@ -18,9 +18,11 @@ app.use(express.static("public"));
 import workspaceRouter from "./routes/workspace.route";
 import userRouter from "./routes/user.route";
 import taskRouter from "./routes/task.route";
+import memberRouter from "./routes/member.routes";
 
 app.use("/api/workspace", workspaceRouter);
 app.use("/api/user", userRouter);
 app.use("/api/task", taskRouter);
+app.use("/api/member", memberRouter);
 
 export { app };

@@ -1,13 +1,15 @@
+import { User } from "./auth.types";
+import { Member } from "./member.types";
 import { Task } from "./task.types";
 
 export type WorkspaceFormData = {
   name: string;
 };
 
-export type Workspaces = {
-  totalTasks: number;
-  totalMembers: number;
-  taskCompleted: number;
+export type Workspace = {
+  totalTasks?: number;
+  totalMembers?: number;
+  taskCompleted?: number;
   id: string;
   name: string;
   workspaceCreatorId: string;
@@ -19,8 +21,8 @@ export type Workspaces = {
 export type WorkspacesResponse = {
   message: string;
   data: {
-    workspaceWhereUserIsAdmin: Workspaces[];
-    workspaceWhereUserIsPartOf: Workspaces[];
+    workspaceWhereUserIsAdmin: Workspace[];
+    workspaceWhereUserIsPartOf: Workspace[];
   };
 };
 export type WorkspaceById = {
@@ -35,6 +37,14 @@ export type WorkspaceById = {
       updatedAt: Date;
     };
     tasks: Task[];
-    totalMembers: number;
+    members: User[];
   };
+};
+
+type ExistingMember = {
+  memberId: string;
+};
+export type ExistingMemberResponse = {
+  message: string;
+  data: ExistingMember[];
 };

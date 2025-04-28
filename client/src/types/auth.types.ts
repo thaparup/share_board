@@ -15,6 +15,7 @@ type User = {
   name: string;
   email: string;
   avatarImage: string;
+  role?: "ADMIN" | "MEMBER";
 };
 
 type AuthStoreType = {

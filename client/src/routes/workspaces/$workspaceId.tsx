@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useQueryFetchAllTasksRelatedToWorkspaceId, useQueryFetchWorkspaceById } from '../../Api-Client/workspace';
+import { useQueryFetchWorkspaceById } from '../../Api-Client/workspace';
 import TaskCards from '../../components/TaskCards';
 import Body from '../../components/Body';
 import WorkspaceMembersSection from '../../components/WorkspaceMembersSection';
@@ -7,6 +7,7 @@ import WorkspaceMembersSection from '../../components/WorkspaceMembersSection';
 
 export const Route = createFileRoute('/workspaces/$workspaceId')({
   loader: async ({ params }) => {
+
     return {
       workspaceId: params.workspaceId,
     };
@@ -19,7 +20,6 @@ export const Route = createFileRoute('/workspaces/$workspaceId')({
 
 function RouteComponent() {
   const { workspaceId } = Route.useLoaderData();
-  const { data: workspace } = useQueryFetchWorkspaceById(workspaceId);
 
   // Handle adding a member - this would typically open your modal
   const handleAddMemberClick = () => {
@@ -27,6 +27,22 @@ function RouteComponent() {
     console.log('Add member clicked');
   };
 
+  const { data: workspace,
+    isLoading,
+    isError,
+    error
+  } = useQueryFetchWorkspaceById(workspaceId);
+
+
+  if (isLoading) return <Body><div>Loading workspace data...</div></Body>;
+
+  // Show error state
+  if (isError) return <Body><div>Error loading workspace: {error?.message}</div></Body>;
+
+  // Show when data doesn't exist
+  if (!workspace || !workspace.data) return <Body><div>No workspace data available</div></Body>;
+
+  console.log(workspace)
   return (
     <Body>
       <div className="container mx-auto px-4 py-8">
@@ -37,9 +53,11 @@ function RouteComponent() {
 
         {/* Members Section */}
         <WorkspaceMembersSection
-          members={workspace?.data?.members || []}
-          totalMembers={workspace?.data?.totalMembers || 0}
+          members={workspace?.data.members}
+          workspace={workspace.data.workspace}
+          tasks={workspace?.data.tasks}
           onAddMemberClick={handleAddMemberClick}
+          workspaceId={workspaceId}
         />
 
         {/* Tasks Section */}

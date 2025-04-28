@@ -52,8 +52,7 @@ const fetchWorkspaceById = async (
   workspaceId: string
 ): Promise<WorkspaceById> => {
   try {
-    console.log("workspace id", workspaceId);
-    const response = await axios.get("/api/workspace/" + workspaceId, {
+    const response = await axios.get(`/api/workspace/${workspaceId}`, {
       withCredentials: true,
     });
 
@@ -69,7 +68,10 @@ const fetchWorkspaceById = async (
 export const useQueryFetchWorkspaceById = (workspaceId: string) =>
   useQuery({
     queryKey: ["workspacesById", workspaceId],
-    queryFn: () => fetchWorkspaceById(workspaceId),
+    queryFn: () => {
+      console.log("Query function executing for workspace:", workspaceId);
+      return fetchWorkspaceById(workspaceId);
+    },
     enabled: !!workspaceId,
   });
 
@@ -94,6 +96,9 @@ export const useQueryFetchAllTasksRelatedToWorkspaceId = (
 ) =>
   useQuery({
     queryKey: ["tasksOfWorkspaceId", workspaceId],
-    queryFn: () => fetchAllTasksRelatedToWorkspaceId(workspaceId),
-    enabled: !!workspaceId,
+    queryFn: () => {
+      console.log("Query function is running with workspaceId:", workspaceId);
+      return fetchWorkspaceById(workspaceId);
+    },
+    enabled: true,
   });

@@ -28,10 +28,13 @@ export const createWorkspace = async (req: Request, res: Response) => {
         },
       },
     });
-    console.log(newWorkspace);
+
     await prisma.workspaceMember.create({
       data: {
         role: "ADMIN",
+        memberName: user.name,
+        memberEmail: user.email,
+        memberAvatarImage: user.avatarImage,
         workspace: {
           connect: {
             id: newWorkspace.id,
@@ -156,7 +159,6 @@ export const getAllWorkspace = async (req: Request, res: Response) => {
 export const getWorkspaceById = async (req: Request, res: Response) => {
   try {
     const { workspaceId } = req.params;
-    console.log(workspaceId);
 
     const workspace = await prisma.workspace.findFirst({
       where: { id: workspaceId! },
@@ -168,7 +170,15 @@ export const getWorkspaceById = async (req: Request, res: Response) => {
     }
 
     const members = await prisma.workspaceMember.findMany({
-      where: { id: workspace.id },
+      where: { workspaceId: workspace.id },
+      select: {
+        id: true,
+        memberId: true,
+        memberName: true,
+        memberEmail: true,
+        memberAvatarImage: true,
+        role: true,
+      },
     });
 
     const tasks = await prisma.task.findMany({
@@ -197,12 +207,20 @@ export const getWorkspaceById = async (req: Request, res: Response) => {
       }));
     });
 
+    const formattedMembers = members.map((member) => ({
+      id: member.id,
+      memberId: member.memberId,
+      name: member.memberName,
+      email: member.memberEmail,
+      avatarImage: member.memberAvatarImage,
+      role: member.role,
+    }));
     res.status(200).json({
       message: "Workspace fetched",
       data: {
         workspace: workspace,
         tasks: tasksInDetail,
-        totalMembers: members.length,
+        members: formattedMembers,
       },
     });
     return;

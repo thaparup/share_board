@@ -22,7 +22,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export const queryClient = new QueryClient()
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Check these settings
+      refetchOnWindowFocus: false,
+      retry: false,
+      // etc.
+    }
+  }
+})
 
 function InnerApp() {
   const auth = useAuthStore()
