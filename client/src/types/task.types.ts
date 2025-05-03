@@ -60,3 +60,15 @@ export type CreateTaskFormData = {
   dueDate: string;
   startedDate: string;
 };
+
+export type TasksWhereUserIsAdmin = {
+  message: string;
+  data: {
+    workspaceId: string;
+    tasks: Task[];
+  };
+};
+export type taskGroup = {
+  workspaceId: string;
+  tasks: Task[];
+};

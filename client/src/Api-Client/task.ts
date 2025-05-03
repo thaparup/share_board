@@ -1,5 +1,9 @@
 import axios from "axios";
-import { CreateTaskFormData, GetTaskByIdResponse } from "../types/task.types";
+import {
+  CreateTaskFormData,
+  GetTaskByIdResponse,
+  TasksWhereUserIsAdmin,
+} from "../types/task.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 const fetchTaskId = async (
@@ -60,3 +64,27 @@ export const useMutationCreateTask = () => {
     }) => createTask(formData, workspaceId),
   });
 };
+
+const fetchTaskWhereUserIsAdmin = async (): Promise<TasksWhereUserIsAdmin> => {
+  try {
+    const response = await axios.get(`/api/task`, {
+      withCredentials: true,
+    });
+
+    if (response.status !== 200) {
+      throw new Error("couuld not fetch the task ");
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error("Could not fetch data");
+  }
+};
+
+export const useFetchTaskWhereUserIsAdmin = () =>
+  useQuery({
+    queryKey: ["taskWhereUserIsAdmin"],
+    queryFn: () => {
+      return fetchTaskWhereUserIsAdmin();
+    },
+    enabled: true,
+  });

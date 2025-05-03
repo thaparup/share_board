@@ -237,8 +237,6 @@ export async function getTaskById(req: Request, res: Response) {
     const taskId = req.params.taskId;
     const workspaceId = req.params.workspaceId;
 
-    console.log("workspace ", workspaceId);
-    console.log("task ", taskId);
     if (!taskId) {
       res.status(400).json({ message: "No task found" });
       return;
@@ -281,5 +279,43 @@ export async function getTaskById(req: Request, res: Response) {
     return;
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
+export async function getAllTaskWhereTheUserIsAdmin(
+  req: Request,
+  res: Response
+) {
+  try {
+    const userId = req.user?.id;
+    const allTheTask = await prisma.task.findMany({
+      where: { taskCreatorId: userId },
+    });
+
+    const groupedArray = Object.values(
+      allTheTask.reduce(
+        (acc: { [key: string]: { workspaceId: string; tasks: any } }, task) => {
+          const key = task.workspaceId;
+          if (!acc[key]) {
+            acc[key] = {
+              workspaceId: key,
+              tasks: [],
+            };
+          }
+          acc[key].tasks.push(task);
+          return acc;
+        },
+        {}
+      )
+    );
+
+    res.status(200);
+    res.json({
+      message: "tasks where the user is the admin",
+      data: groupedArray,
+    });
+  } catch (error) {
+    console.error(error); // You might want to log the error for debugging
+    res.status(500).json({ message: "Internal server error" });
   }
 }
