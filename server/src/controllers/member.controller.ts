@@ -70,9 +70,27 @@ export const existingMemberOnTheWorkspace = async (
       where: { workspaceId: workspaceId },
       select: {
         memberId: true,
+        memberAvatarImage: true,
+        memberEmail: true,
+        memberName: true,
       },
     });
 
+    const members: {
+      id: string;
+      email: string;
+      avatarImage: string;
+      name: string;
+    }[] = [];
+    existingMembers.map((member) => {
+      members.push({
+        id: member.memberId,
+        name: member.memberName,
+        email: member.memberEmail,
+        avatarImage: member.memberAvatarImage || "",
+      });
+    });
+    console.log(members);
     res.status(200).json({
       message: "Existing members on the workspace",
       data: existingMembers,

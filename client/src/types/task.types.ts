@@ -37,3 +37,26 @@ export type GetTaskByIdResponse = {
     taskTodo: TaskTodo[];
   };
 };
+
+type Checklist = {
+  name: string;
+  checked: boolean;
+};
+
+type AssignedTo = {
+  id: string;
+  name: string;
+  email: string;
+  avatarImage: string;
+};
+export type CreateTaskFormData = {
+  id: string;
+  name: string;
+  description: string;
+  priority: "LOW" | "HIGH" | "MEDIUM";
+  progress: "IN_PROGRESS" | "PENDING" | "COMPLETED" | "OVERDUE";
+  checklist: Checklist[];
+  assignedTo: AssignedTo[];
+  dueDate: string;
+  startedDate: string;
+};

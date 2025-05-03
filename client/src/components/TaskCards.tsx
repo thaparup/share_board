@@ -48,7 +48,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
     const isOverdue = daysRemaining === "Overdue";
     const taskId = task.id
     return (
-        <Link to='/workspaces/$workspaceId/task/view/$taskId' params={{ taskId, workspaceId }} className="mb-4 bg-white  rounded-lg shadow-md overflow-hidden flex">
+        <Link to='/workspaces/$workspaceId/task/manage/$taskId' params={{ taskId, workspaceId }} className="mb-4 bg-white  rounded-lg shadow-md overflow-hidden flex">
             {/* <div className={`w-2 ${priorityColors[task.priority]}`}>{task.priority}</div> */}
             <div className={`w-2 bg-indigo-600`}></div>
 

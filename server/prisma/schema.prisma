@@ -36,6 +36,7 @@ model Task {
   TaskTodoCheckList TaskTodoCheckList[]
   dueDate           DateTime
   createdAt         DateTime            @default(now())
+  startedAt         DateTime
   updatedAt         DateTime            @updatedAt
   TaskAssignment    TaskAssignment[]
 }
@@ -103,4 +104,5 @@ enum Progress {
   IN_PROGRESS
   COMPLETED
   PENDING
+  OVERDUE
 }

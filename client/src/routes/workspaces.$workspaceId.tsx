@@ -25,9 +25,9 @@ function RouteComponent() {
   const { workspaceId } = Route.useLoaderData();
   console.log('workspace id ', workspaceId)
 
-  // Handle adding a member - this would typically open your modal
+
   const handleAddMemberClick = () => {
-    // Your code to open the modal or navigate to add member page
+
     console.log('Add member clicked');
   };
 
@@ -40,10 +40,9 @@ function RouteComponent() {
 
   if (isLoading) return <Body><div>Loading workspace data...</div></Body>;
 
-  // Show error state
+
   if (isError) return <Body><div>Error loading workspace: {error?.message}</div></Body>;
 
-  // Show when data doesn't exist
   if (!workspace || !workspace.data) return <Body><div>No workspace data available</div></Body>;
 
 

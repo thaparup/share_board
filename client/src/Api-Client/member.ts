@@ -17,19 +17,6 @@ export const addMember = async (formData: Member[], workspaceId: string) => {
   }
 };
 
-// export const useMutationAddMember = () =>
-
-//   useMutation({
-//     mutationFn: ({
-//       formData,
-//       workspaceId,
-//     }: {
-//       formData: User[];
-//       workspaceId: string;
-//     }) => addMember(formData, workspaceId),
-//   });
-
-// Custom mutation hook to add members
 export const useMutationAddMember = (workspaceId: string) => {
   const { refetch } = useQueryFetchWorkspaceById(workspaceId); // Get the refetch method
 
@@ -42,7 +29,6 @@ export const useMutationAddMember = (workspaceId: string) => {
       workspaceId: string;
     }) => addMember(formData, workspaceId),
     onSuccess: () => {
-      // Refetch the workspace data when the member is successfully added
       refetch();
     },
   });

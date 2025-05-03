@@ -20,9 +20,16 @@ export async function getAllTasks(req: Request, res: Response) {
 
 export async function createTask(req: Request, res: Response) {
   try {
-    const user = req.user;
+    const user = req.user as { id: string; name: string; email: string };
     const workspaceId = req.params.workspaceId;
     const parsed = createTaskSchema.safeParse(req.body);
+
+    if (!workspaceId) {
+      res
+        .status(400)
+        .json({ message: "Missing workspaceId in URL parameters." });
+      return;
+    }
 
     if (!parsed.success) {
       res.status(400).json({
@@ -58,6 +65,7 @@ export async function createTask(req: Request, res: Response) {
       });
 
       if (Array.isArray(checklist) && checklist.length > 0) {
+        console.log(Array.isArray(checklist));
         await tx.taskTodoCheckList.createMany({
           data: checklist.map((item) => ({
             name: item.name,
@@ -72,21 +80,22 @@ export async function createTask(req: Request, res: Response) {
         where: { taskId: createdTask.id },
       });
 
-      // if (Array.isArray(assignedTo) && assignedTo.length > 0) {
-      //   await tx.taskAssignment.createMany({
-      //     data: assignedTo.map((item) => ({
-      //       taskId: createdTask.id,
-      //       assignedUserId: item.id,
-      //       assignedUserName: item.name,
-      //       assignedUserEmail: item.email,
-      //     })),
-      //   });
-      // }
-      // const assignedUserList = await tx.taskAssignment.findMany({
-      //   where: { taskId: createdTask.id },
-      // });
+      if (Array.isArray(assignedTo) && assignedTo.length > 0) {
+        const assignedUserList = await tx.taskAssignment.createMany({
+          data: assignedTo.map((item) => ({
+            taskId: createdTask.id,
+            assignedUserId: item.id,
+            assignedUserName: item.name,
+            assignedUserEmail: item.email,
+          })),
+        });
+      }
 
-      return { createdTask, createdTodoList };
+      const assignedUserList = await tx.taskAssignment.findMany({
+        where: { taskId: createdTask.id },
+      });
+
+      return { createdTask, createdTodoList, assignedUserList };
     });
 
     res.status(201).json({
@@ -94,7 +103,7 @@ export async function createTask(req: Request, res: Response) {
       data: {
         task: result.createdTask,
         taskTodo: result.createdTodoList,
-        // assignedUser: result.assignedUserList,
+        assignedUser: result.assignedUserList,
       },
     });
     return;

@@ -5,6 +5,7 @@ import { Button } from './ui/button'
 import TaskCards from './TaskCards'
 import { Link } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
+import CreateTaskModal from './CreateTaskModal'
 
 type Props = {
     tasks: Task[],
@@ -13,17 +14,19 @@ type Props = {
 
 const WorkspaceTask = ({ tasks, workspaceId }: Props) => {
     return (
-        <Link to='.' className='mt-12'>
+        <div className='mt-12'>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-white">Tasks</h2>
-                <Button
+                {/* <Button
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md mr-8 flex items-center text-sm"
 
                 >
                     <Plus size={16} className="mr-1" />
                     Add Task
-                </Button>
+                </Button> */}
 
+
+                <CreateTaskModal />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
@@ -41,7 +44,7 @@ const WorkspaceTask = ({ tasks, workspaceId }: Props) => {
                     </div>
                 )}
             </div>
-        </Link>
+        </div>
 
     )
 }
