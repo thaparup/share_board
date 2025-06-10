@@ -43,18 +43,7 @@ function RouteComponent() {
     }
   };
 
-  const getProgressColor = (progress: Task['progress']) => {
-    switch (progress) {
-      case 'COMPLETED':
-        return 'bg-green-500';
-      case 'IN_PROGRESS':
-        return 'bg-blue-500';
-      case 'PENDING':
-        return 'bg-yellow-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
+
 
   const toggleChecklistItem = () => {
     if (!data) return;
@@ -98,7 +87,7 @@ function RouteComponent() {
           {/* Back button */}
           <button
             onClick={() => window.history.back()}
-            className="flex items-center mb-6 text-blue-400 hover:text-blue-500 transition-colors"
+            className="cursor-pointer flex items-center mb-6 text-blue-400 hover:text-blue-500 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -109,17 +98,19 @@ function RouteComponent() {
           {/* Task header */}
           <div className="mb-8">
             <div className="flex items-center justify-between flex-wrap gap-4 mb-2">
-              <h1 className="text-3xl font-bold flex-grow">{task.name}</h1>
-              <div className="flex items-center space-x-3">
+              <div>
+                <span>Workspace: <span className='font-medium'>{task.workspaceName} </span></span>
+                <h1 className="text-3xl font-bold flex-grow">{task.name}</h1>
+              </div>
+              <div className="flex flex-col gap-1 items-center space-x-3">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(task.priority)}`}>
                   {task.priority}
                 </span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getProgressColor(task.progress)}`}>
-                  {task.progress.replace('_', ' ')}
-                </span>
+
               </div>
             </div>
             <p className="text-gray-400">Due: {formatDate(task.dueDate)}</p>
+            <span className='font-medium'>Created By: <span>{data?.data.task.taskCreatorName}</span></span>
           </div>
 
           {/* Task description */}
@@ -130,20 +121,19 @@ function RouteComponent() {
 
           {/* Checklist */}
           <div className="bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Checklist</h2>
+            <h2 className="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Task todo</h2>
             {taskTodo ? (
               <ul className="space-y-3">
-                <li className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={taskTodo.checked}
-                    onChange={() => toggleChecklistItem()}
-                    className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 focus:ring-opacity-50 mr-3"
-                  />
-                  <span className={taskTodo.checked ? 'line-through text-gray-500' : 'text-gray-200'}>
-                    {taskTodo.name}
-                  </span>
-                </li>
+
+                {data?.data.taskTodo.map((todo) =>
+                  <li className="flex items-center">
+
+                    <span className={todo.checked ? 'line-through text-gray-500' : 'text-gray-200'}>
+                      {todo.name}
+                    </span>
+                  </li>
+                )}
+
               </ul>
             ) : (
               <p className="text-gray-500 italic">No checklist items</p>
@@ -157,13 +147,13 @@ function RouteComponent() {
 
             {assignedUser.length > 0 ? (
               assignedUser.map((user) => (
-                <div key={user.id} className="flex items-center bg-gray-700 rounded-lg p-4 mb-2">
+                <div key={user.memberId} className="flex items-center bg-gray-700 rounded-lg p-4 mb-2">
                   <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center mr-3">
-                    <span className="font-medium text-white">{user.assignedUserName.charAt(0)}</span>
+                    <span className="font-medium text-white">{user.memberName.charAt(0)}</span>
                   </div>
                   <div>
-                    <p className="font-medium">{user.assignedUserName}</p>
-                    <p className="text-sm text-gray-400">{user.assignedUserEmail}</p>
+                    <p className="font-medium">{user.memberName}</p>
+                    <p className="text-sm text-gray-400">{user.memberEmail}</p>
                   </div>
                 </div>
               ))

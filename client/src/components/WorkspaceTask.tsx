@@ -2,9 +2,10 @@ import React from 'react'
 import { Task } from '../types/task.types'
 import { Button } from './ui/button'
 
-import TaskCards from './TaskCards'
+import TaskCards from './TaskCard'
 import { useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
+import TaskCard from './TaskCard'
 
 type Props = {
     tasks: Task[]
@@ -37,7 +38,7 @@ const WorkspaceTask = ({ tasks, workspaceId }: Props) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
                 {tasks.map((task) => (
-                    <TaskCards key={task.id} task={task} workspaceId={workspaceId} />
+                    <TaskCard key={task.id} task={task} workspaceId={workspaceId} />
                 ))}
 
                 {tasks?.length === 0 && (

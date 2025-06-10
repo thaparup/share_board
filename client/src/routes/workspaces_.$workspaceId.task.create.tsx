@@ -45,8 +45,8 @@ function RouteComponent() {
   const { data: existingMembers } = useQueryFetchExsitingMemberOnTheWorkspace(
     `${workspaceId}`
   );
+  const nav = useNavigate({ from: '/workspaces/$workspaceId/task/create' })
 
-  const nav = useNavigate();
   const user = useAuthStore();
 
   const methods = useForm<CreateTaskFormData>({
@@ -101,6 +101,7 @@ function RouteComponent() {
       await createTask(formData, workspaceId),
     onSuccess: () => {
       toast.success("Task created!");
+      nav({ to: '/workspaces/$workspaceId' })
       reset()
     },
     onError: () => {
@@ -275,7 +276,7 @@ function RouteComponent() {
                     );
                   },
                 })}
-                className="outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500  placeholder:italic px-4 py-2 rounded-md"
+                className="cursor-pointer outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500  placeholder:italic px-4 py-2 rounded-md"
               />
               {errors.startDate && (
                 <p className="text-red-500 text-sm">
@@ -303,7 +304,7 @@ function RouteComponent() {
                     );
                   },
                 })}
-                className="outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500  placeholder:italic px-4 py-2 rounded-md"
+                className="cursor-pointer outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500  placeholder:italic px-4 py-2 rounded-md"
               />
               {errors.dueDate && (
                 <p className="text-red-500 text-sm">{errors.dueDate.message}</p>

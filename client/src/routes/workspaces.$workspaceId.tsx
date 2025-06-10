@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQueryFetchWorkspaceById } from '../Api-Client/workspace';
-import TaskCards from '../components/TaskCards';
+import TaskCards from '../components/TaskCard';
 import Body from '../components/Body';
 import WorkspaceMembersSection from '../components/WorkspaceMembersSection';
 import { Button } from '../components/ui/button';

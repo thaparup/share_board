@@ -77,9 +77,10 @@ function RouteComponent() {
     fields: assignedTo,
     append: addUser,
     remove: removeUser,
-
+    replace: replaceAssignedUser
   } = useFieldArray({
     name: "assignedTo",
+
     control,
     keyName: "id",
     rules: {
@@ -96,8 +97,17 @@ function RouteComponent() {
       setValue('startDate', dayjs(data?.data.task.createdAt).format('YYYY-MM-DD'))
       setValue('dueDate', dayjs(data?.data.task.dueDate).format('YYYY-MM-DD'))
       replace(data?.data.taskTodo);
-      // replace(data?.data.data?.)
-      setValue('assignedTo', data?.data.assignedUser || []);
+
+      replaceAssignedUser(
+        data?.data.assignedUser.map((user) => ({
+          memberId: user.memberId,
+          memberName: user.memberName,
+          memberEmail: user.memberEmail,
+          memberAvatar: user.memberAvatarImage ?? "",
+        }))
+      );
+
+
     }
 
   }, [data, setValue])

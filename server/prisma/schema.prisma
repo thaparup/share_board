@@ -29,6 +29,7 @@ model Task {
   completed         Boolean             @default(false)
   workspace         Workspace           @relation("workspace", fields: [workspaceId], references: [id])
   workspaceId       String
+  workspaceName     String
   taskCreator       User                @relation(fields: [taskCreatorId], references: [id])
   taskCreatorId     String
   taskCreatorName   String

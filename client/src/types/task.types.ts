@@ -3,9 +3,10 @@ export interface Task {
   name: string;
   description: string;
   priority: "LOW" | "HIGH" | "MEDIUM";
-  progress: "IN_PROGRESS" | "PENDING" | "COMPLETED";
   totalMembers: number;
+  completed: boolean;
   workspaceId: string;
+  workspaceName: string;
   taskCreatorId: string;
   taskCreatorName: string;
   taskCreatorEmail: string;
@@ -15,12 +16,10 @@ export interface Task {
 }
 
 export type AssignedUser = {
-  id: string;
-  taskId: string;
-  assignedUserId: string;
-  assignedUserName: string;
-  assignedUserEmail: string;
-  assignedAt: Date;
+  memberId: string;
+  memberName: string;
+  memberEmail: string;
+  memberAvatarImage?: string;
 };
 export type TaskTodo = {
   name: string;
@@ -47,7 +46,7 @@ type AssignedTo = {
   memberId: string;
   memberName: string;
   memberEmail: string;
-  memberAvatarImage: string;
+  memberAvatar?: string;
 };
 export type CreateTaskFormData = {
   id: string;
@@ -60,14 +59,55 @@ export type CreateTaskFormData = {
   startDate: string;
 };
 
-export type TasksWhereUserIsAdmin = {
-  message: string;
-  data: {
-    workspaceId: string;
-    tasks: Task[];
-  };
-};
 export type taskGroup = {
   workspaceId: string;
   tasks: Task[];
+};
+export type Task = {
+  id: string;
+  name: string;
+  description: string;
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  completed: boolean;
+  workspaceId: string;
+  workspaceName: string;
+  taskCreatorId: string;
+  taskCreatorName: string;
+  taskCreatorEmail: string;
+  dueDate: string;
+  startDate: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type WorkspaceWithTasks = {
+  workspace: string;
+  tasks: {
+    id: string;
+    name: string;
+    description: string;
+    priority: "LOW" | "MEDIUM" | "HIGH";
+    completed: boolean;
+    workspaceId: string;
+    workspaceName: string;
+    taskCreatorId: string;
+    taskCreatorName: string;
+    taskCreatorEmail: string;
+    dueDate: string;
+    startDate: string;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+};
+export type TaskManagementData = {
+  taskWhereUserIsAdmin: WorkspaceWithTasks[];
+  taskWhereUserIsNotAdmin: WorkspaceWithTasks[];
+};
+
+export type TasksWhereUserIsAdmin = {
+  message: string;
+  data: {
+    taskWhereUserIsAdmin: WorkspaceWithTasks[];
+    taskWhereUserIsNotAdmin: WorkspaceWithTasks[];
+  };
 };

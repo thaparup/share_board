@@ -45,7 +45,7 @@ type ExistingMember = {
   memberId: string;
   memberName: string;
   memberEmail: string;
-  memberAvatarImage: string;
+  memberAvatar: string;
 };
 export type ExistingMemberResponse = {
   message: string;

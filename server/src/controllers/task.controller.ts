@@ -32,6 +32,16 @@ export async function createTask(req: Request, res: Response) {
       return;
     }
 
+    const findWorkspace = await prisma.workspace.findUnique({
+      where: {
+        id: workspaceId,
+      },
+    });
+
+    if (!findWorkspace) {
+      res.status(400).json({ message: "Workspace not found" });
+      return;
+    }
     if (!parsed.success) {
       res.status(400).json({
         message: "Make sure required fields are not empty",
@@ -62,11 +72,11 @@ export async function createTask(req: Request, res: Response) {
           taskCreatorEmail: user?.email!,
           dueDate,
           startDate,
+          workspaceName: findWorkspace.name,
         },
       });
 
       if (Array.isArray(checklist) && checklist.length > 0) {
-        console.log(Array.isArray(checklist));
         await tx.taskTodoCheckList.createMany({
           data: checklist.map((item) => ({
             name: item.name,
@@ -82,12 +92,13 @@ export async function createTask(req: Request, res: Response) {
       });
 
       if (Array.isArray(assignedTo) && assignedTo.length > 0) {
-        const assignedUserList = await tx.taskAssignment.createMany({
+        await tx.taskAssignment.createMany({
           data: assignedTo.map((item) => ({
             taskId: createdTask.id,
             assignedUserId: item.memberId,
             assignedUserName: item.memberName,
             assignedUserEmail: item.memberEmail,
+            assignedUserAvatar: item.memberAvatar || "",
           })),
         });
       }
@@ -205,6 +216,7 @@ export async function updateTask(req: Request, res: Response) {
             assignedUserId: item.memberId!,
             assignedUserName: item.memberName!,
             assignedUserEmail: item.memberEmail!,
+            assignedUserAvatar: item.memberAvatar!,
           })),
         });
       }
@@ -253,7 +265,6 @@ export async function getTaskById(req: Request, res: Response) {
         workspaceId: workspaceId,
       },
     });
-    console.log(existingTask);
     if (!existingTask) {
       res.status(400).json({ message: "No task found for the workspace" });
       return;
@@ -263,25 +274,24 @@ export async function getTaskById(req: Request, res: Response) {
         taskId: taskId,
       },
     });
+    type Member = {
+      memberId: string;
+      memberName: string;
+      memberEmail: string;
+      memeberAvatarImage?: string;
+    };
+    const taskMember: Member[] = taskAssignedUser.map((user) => ({
+      memberId: user.assignedUserId,
+      memberName: user.assignedUserName,
+      memberEmail: user.assignedUserEmail,
+      memberAvatarImage: "",
+    }));
 
-    const taskMember: any = [];
-    taskAssignedUser.map((user) =>
-      taskMember.push({
-        //  id: user.id,
-        // taskId: taskId,
-        memberId: user.assignedUserId,
-        memberName: user.assignedUserName,
-        memberEmail: user.assignedUserEmail,
-
-        // assingedAt: user.assignedAt,
-      })
-    );
     const tastTodo = await prisma.taskTodoCheckList.findMany({
       where: {
         taskId: taskId,
       },
     });
-    console.log("task member", taskMember);
     res.status(200).json({
       message: "task fetched",
       data: {
@@ -302,34 +312,53 @@ export async function getAllTaskWhereTheUserIsAdmin(
 ) {
   try {
     const userId = req.user?.id;
-    const allTheTask = await prisma.task.findMany({
-      where: { taskCreatorId: userId },
+
+    const workspace = await prisma.workspace.findMany({
+      where: {
+        workspaceCreatorId: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
     });
 
-    const groupedArray = Object.values(
-      allTheTask.reduce(
-        (acc: { [key: string]: { workspaceId: string; tasks: any } }, task) => {
-          const key = task.workspaceId;
-          if (!acc[key]) {
-            acc[key] = {
-              workspaceId: key,
-              tasks: [],
-            };
-          }
-          acc[key].tasks.push(task);
-          return acc;
-        },
-        {}
-      )
+    const allTheTasksOfTheWorkspace = await Promise.all(
+      workspace.map(async (w) => {
+        const tasks = await prisma.task.findMany({
+          where: {
+            workspaceId: w.id,
+            taskCreatorId: userId,
+          },
+        });
+
+        return {
+          workspace: w.name,
+          tasks: tasks,
+        };
+      })
     );
 
+    const tasksInOtherWorkspaces = await prisma.task.findMany({
+      where: {
+        taskCreatorId: userId,
+        workspaceId: {
+          notIn: workspace.map((w) => w.id),
+        },
+      },
+    });
+
+    console.log(tasksInOtherWorkspaces);
     res.status(200);
     res.json({
       message: "tasks where the user is the admin",
-      data: groupedArray,
+      data: {
+        taskWhereUserIsAdmin: allTheTasksOfTheWorkspace,
+        taskWhereUserIsNotAdmin: tasksInOtherWorkspaces,
+      },
     });
   } catch (error) {
-    console.error(error); // You might want to log the error for debugging
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

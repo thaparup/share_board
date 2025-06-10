@@ -18,7 +18,7 @@ const Sidebar = () => {
     const menuItems = [
         { name: 'Dashboard', icon: <LayoutDashboard size={18} />, to: '/dashboard' },
         { name: 'Workspaces', icon: <Folder size={18} />, to: '/workspaces' },
-        { name: 'Manage Tasks', icon: <CheckSquare size={18} />, to: '/tasks' },
+        { name: 'Manage Tasks', icon: <CheckSquare size={18} />, to: '/tasks/manage' },
         { name: 'Logout', icon: <LogOut size={18} />, to: '/logout' },
     ]
     return (

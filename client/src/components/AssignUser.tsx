@@ -86,8 +86,8 @@ const AssignUser = ({ fields, append, remove, errors, workspaceId, isAssigned, s
                     <div className="flex flex-wrap gap-2">
                         {fields.map((user) => (
                             <div key={user.memberId} className="flex items-center bg-gray-800 rounded-full pl-2 pr-1 py-1">
-                                {user.memberAvatarImage ? (
-                                    <img src={user.memberAvatarImage} alt={user.memberName} className="w-5 h-5 rounded-full mr-1" />
+                                {user.memberAvatar ? (
+                                    <img src={user.memberAvatar} alt={user.memberName} className="w-5 h-5 rounded-full mr-1" />
                                 ) : (
                                     <div className="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center mr-1">
                                         <span className="text-white text-xs font-bold">
@@ -129,9 +129,9 @@ const AssignUser = ({ fields, append, remove, errors, workspaceId, isAssigned, s
                                 onClick={() => toggleUserSelection(member)}
                             >
                                 <div className="flex items-center">
-                                    {member.memberAvatarImage ? (
+                                    {member.memberAvatar ? (
                                         <img
-                                            src={member.memberAvatarImage}
+                                            src={member.memberAvatar}
                                             alt={member.memberName}
                                             className="w-8 h-8 rounded-full mr-3"
                                         />

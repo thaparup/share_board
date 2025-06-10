@@ -11,11 +11,6 @@ export const priorityColors: Record<Task["priority"], string> = {
     LOW: "bg-blue-500",
 };
 
-export const progressBadges: Record<Task["progress"], string> = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    IN_PROGRESS: "bg-blue-100 text-blue-800",
-    COMPLETED: "bg-green-100 text-green-800",
-};
 
 export const formatDate = (dateString: string): string => {
     try {
@@ -39,7 +34,6 @@ export const getDaysRemaining = (dueDate: string) => {
 
 interface TaskCardProps {
     task: Task;
-
     workspaceId: string,
 }
 
@@ -48,18 +42,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
     const isOverdue = daysRemaining === "Overdue";
     const taskId = task.id
     return (
-        <Link to='/workspaces/$workspaceId/task/manage/$taskId' params={{ taskId, workspaceId }} className="mb-4 bg-white  rounded-lg shadow-md overflow-hidden flex">
+        <Link to='/workspaces/$workspaceId/task/view/$taskId' params={{ taskId, workspaceId }} className="mb-4 bg-white  rounded-lg shadow-md overflow-hidden flex">
             {/* <div className={`w-2 ${priorityColors[task.priority]}`}>{task.priority}</div> */}
             <div className={`w-2 bg-indigo-600`}></div>
 
             <div className="flex-1 p-4">
                 <div className="flex justify-between items-start">
                     <h3 className="text-lg font-semibold text-gray-800">{task.name}</h3>
-                    <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${progressBadges[task.progress]}`}
-                    >
-                        {task.progress}
-                    </span>
+
                 </div>
 
                 <p className="text-gray-600 mt-2 text-sm">{task.description}</p>
@@ -76,9 +66,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
                         className={`flex items-center gap-2 ${isOverdue ? "text-red-600 font-semibold" : "text-gray-600"}`}
                     >
                         <Calendar className="w-4 h-4" />
-                        <span>
-                            {formatDate(task.dueDate)} • {daysRemaining}
-                        </span>
+                        {task.completed ? 'Completed' : (
+
+                            <span>
+                                {formatDate(task.dueDate)} • {daysRemaining}
+                            </span>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-600">

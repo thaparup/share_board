@@ -2,7 +2,7 @@ export type Member = {
   memberId: string;
   memberName: string;
   memberEmail: string;
-  memberAvatarImage: string;
+  memberAvatar?: string;
 };
 
 export type CreateTaskFormData = {};

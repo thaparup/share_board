@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Body from '../components/Body'
 import { useFetchTaskWhereUserIsAdmin } from '../Api-Client/task'
-import TaskCard from '../components/TaskCards'
+import TaskCard from '../components/TaskCard'
 import { taskGroup } from '../types/task.types'
 
 export const Route = createFileRoute('/manage/task')({

@@ -47,7 +47,7 @@ const TaskTodo = ({ fields, append, remove, errors, register }: Props) => {
                                 />
 
                                 <Trash
-                                    className="text-red-600"
+                                    className="text-red-600 cursor-pointer"
                                     onClick={() => remove(index)}
                                 />
                             </div>
