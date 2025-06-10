@@ -22,6 +22,7 @@ export async function createTask(req: Request, res: Response) {
   try {
     const user = req.user as { id: string; name: string; email: string };
     const workspaceId = req.params.workspaceId;
+    console.log(req.body);
     const parsed = createTaskSchema.safeParse(req.body);
 
     if (!workspaceId) {
@@ -44,9 +45,9 @@ export async function createTask(req: Request, res: Response) {
       description,
       priority,
       dueDate,
-      progress,
       checklist,
       assignedTo,
+      startDate,
     } = parsed.data;
 
     const result = await prisma.$transaction(async (tx) => {
@@ -60,7 +61,7 @@ export async function createTask(req: Request, res: Response) {
           taskCreatorName: user?.name!,
           taskCreatorEmail: user?.email!,
           dueDate,
-          progress,
+          startDate,
         },
       });
 
@@ -84,9 +85,9 @@ export async function createTask(req: Request, res: Response) {
         const assignedUserList = await tx.taskAssignment.createMany({
           data: assignedTo.map((item) => ({
             taskId: createdTask.id,
-            assignedUserId: item.id,
-            assignedUserName: item.name,
-            assignedUserEmail: item.email,
+            assignedUserId: item.memberId,
+            assignedUserName: item.memberName,
+            assignedUserEmail: item.memberEmail,
           })),
         });
       }
@@ -157,9 +158,9 @@ export async function updateTask(req: Request, res: Response) {
       description,
       priority,
       dueDate,
-      progress,
       checklist,
       assignedTo,
+      startDate,
     } = parsed.data;
 
     const result = await prisma.$transaction(async (tx) => {
@@ -170,7 +171,7 @@ export async function updateTask(req: Request, res: Response) {
           description,
           priority,
           dueDate,
-          progress,
+          startDate,
         },
       });
 
@@ -201,9 +202,9 @@ export async function updateTask(req: Request, res: Response) {
         await tx.taskAssignment.createMany({
           data: assignedTo.map((item) => ({
             taskId: existingTask.id,
-            assignedUserId: item.id!,
-            assignedUserName: item.name!,
-            assignedUserEmail: item.email!,
+            assignedUserId: item.memberId!,
+            assignedUserName: item.memberName!,
+            assignedUserEmail: item.memberEmail!,
           })),
         });
       }
@@ -262,17 +263,30 @@ export async function getTaskById(req: Request, res: Response) {
         taskId: taskId,
       },
     });
+
+    const taskMember: any = [];
+    taskAssignedUser.map((user) =>
+      taskMember.push({
+        //  id: user.id,
+        // taskId: taskId,
+        memberId: user.assignedUserId,
+        memberName: user.assignedUserName,
+        memberEmail: user.assignedUserEmail,
+
+        // assingedAt: user.assignedAt,
+      })
+    );
     const tastTodo = await prisma.taskTodoCheckList.findMany({
       where: {
         taskId: taskId,
       },
     });
-
+    console.log("task member", taskMember);
     res.status(200).json({
       message: "task fetched",
       data: {
         task: existingTask,
-        assignedUser: taskAssignedUser,
+        assignedUser: taskMember,
         taskTodo: tastTodo,
       },
     });

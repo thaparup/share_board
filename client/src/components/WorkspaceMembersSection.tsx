@@ -4,6 +4,7 @@ import { Workspace } from '../types/workspace.types';
 import { Task } from '../types/task.types';
 import { Member } from '../types/member.types';
 import { User } from '../types/auth.types';
+import { useQueryFetchExsitingMemberOnTheWorkspace } from '../Api-Client/member';
 // This component should be added to your workspace page
 
 type props = {
@@ -25,7 +26,6 @@ const WorkspaceMembersSection = ({
 
 
 
-
     return (
         <div className="mb-8 bg-gray-900 rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
@@ -33,13 +33,7 @@ const WorkspaceMembersSection = ({
                     <Users size={20} className="text-indigo-400 mr-2" />
                     <h2 className="text-xl font-semibold text-white"> Workspace Members ({members.length})</h2>
                 </div>
-                {/* <button
-                    onClick={onAddMemberClick}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md flex items-center text-sm"
-                >
-                    <Plus size={16} className="mr-1" />
-                    Add Member
-                </button> */}
+
 
                 <WorkspaceMemberModal workspaceId={workspaceId} members={members} />
             </div>

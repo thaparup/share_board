@@ -23,6 +23,7 @@ function RouteComponent() {
   } = useForm<SignupFormData>();
   const signupMutation = useMutationUserSignup()
   const onSubmit: SubmitHandler<SignupFormData> = (data) => {
+    console.log(data)
     signupMutation.mutate(data, {
       onSuccess: (serverData) => {
         toast.success('Account created!')
@@ -31,7 +32,7 @@ function RouteComponent() {
         nav({ to: '/login' })
       },
       onError: (error: any) => {
-        toast.error(error?.message || 'Signup failedddddd')
+        toast.error(error?.message || 'Signup failed')
       },
     })
   }
@@ -65,7 +66,13 @@ function RouteComponent() {
             id="password"
             type="password"
             className="ring-amber-600 ring-1 py-2 px-3 rounded outline-none"
-            {...register("password", { required: "Password is required" })}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 5,
+                message: "Password must be at least 5 characters",
+              },
+            })}
           />
           {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
 

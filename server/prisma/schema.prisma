@@ -26,7 +26,7 @@ model Task {
   name              String
   description       String
   priority          Priority
-  progress          Progress
+  completed         Boolean             @default(false)
   workspace         Workspace           @relation("workspace", fields: [workspaceId], references: [id])
   workspaceId       String
   taskCreator       User                @relation(fields: [taskCreatorId], references: [id])
@@ -35,21 +35,22 @@ model Task {
   taskCreatorEmail  String
   TaskTodoCheckList TaskTodoCheckList[]
   dueDate           DateTime
+  startDate         DateTime
   createdAt         DateTime            @default(now())
-  startedAt         DateTime
   updatedAt         DateTime            @updatedAt
   TaskAssignment    TaskAssignment[]
 }
 
 model TaskAssignment {
-  id                String   @id @default(cuid())
-  assignedTask      Task     @relation(fields: [taskId], references: [id])
-  taskId            String
-  assignedUser      User     @relation(fields: [assignedUserId], references: [id])
-  assignedUserId    String
-  assignedUserName  String
-  assignedUserEmail String
-  assignedAt        DateTime @default(now())
+  id                 String   @id @default(cuid())
+  assignedTask       Task     @relation(fields: [taskId], references: [id])
+  taskId             String
+  assignedUser       User     @relation(fields: [assignedUserId], references: [id])
+  assignedUserId     String
+  assignedUserName   String
+  assignedUserEmail  String
+  assignedUserAvatar String
+  assignedAt         DateTime @default(now())
 }
 
 model TaskTodoCheckList {

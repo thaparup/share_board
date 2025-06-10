@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useFetchTaskById } from '../Api-Client/task';
+import { updateTask, useFetchTaskById } from '../Api-Client/task';
 import {
   Select,
   SelectContent,
@@ -10,8 +10,6 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
 import AssignUser from "../components/AssignUser";
-import { User } from "../types/auth.types";
-import { useMutationCreateTask } from "../Api-Client/task";
 import {
   FormProvider,
   SubmitHandler,
@@ -19,10 +17,13 @@ import {
   useForm,
 } from "react-hook-form";
 import { CreateTaskFormData } from "../types/task.types";
-import toast from "react-hot-toast";
 import TaskTodo from "../components/TaskTodo";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import { Member } from '../types/member.types';
+import AssignedUserEdit from '../components/AssignedUserEdit';
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 export const Route = createFileRoute(
   '/workspaces_/$workspaceId/task/manage/$taskId',
 )({
@@ -38,12 +39,11 @@ export const Route = createFileRoute(
 function RouteComponent() {
 
   const { taskId, workspaceId } = Route.useLoaderData()
-  const { data: task } = useFetchTaskById(workspaceId, taskId)
-  console.log(task)
-
+  const { data, refetch } = useFetchTaskById(workspaceId, taskId)
+  const [isAssigned, setIsAssigned] = useState(false)
   const methods = useForm<CreateTaskFormData>({
     defaultValues: {
-      name: task?.data.task.name,
+      name: data?.data.task.name,
       description: "",
       checklist: [],
       assignedTo: [],
@@ -81,7 +81,7 @@ function RouteComponent() {
   } = useFieldArray({
     name: "assignedTo",
     control,
-    keyName: "id", // optional
+    keyName: "id",
     rules: {
       validate: (value) => {
         return value.length > 0 || "At least one assignee is required";
@@ -89,34 +89,51 @@ function RouteComponent() {
     },
   });
   useEffect(() => {
-    if (task) {
-      console.log(dayjs(task.data.task.createdAt).format('MM/DD/YYYY'))
-      setValue('name', task.data.task.name)
-      setValue('description', task.data.task.description)
-      setValue('priority', task.data.task.priority)
-      setValue('progress', task.data.task.progress)
-      setValue('startedDate', dayjs(task.data.task.createdAt).format('YYYY-MM-DD'))
-      setValue('dueDate', dayjs(task.data.task.dueDate).format('YYYY-MM-DD'))
-      replace(task.data.taskTodo);
-      // replace(task.data.task.)
+    if (data?.data) {
+      setValue('name', data?.data.task.name)
+      setValue('description', data?.data.task.description)
+      setValue('priority', data?.data.task.priority)
+      setValue('startDate', dayjs(data?.data.task.createdAt).format('YYYY-MM-DD'))
+      setValue('dueDate', dayjs(data?.data.task.dueDate).format('YYYY-MM-DD'))
+      replace(data?.data.taskTodo);
+      // replace(data?.data.data?.)
+      setValue('assignedTo', data?.data.assignedUser || []);
     }
-  }, [task, setValue])
+
+  }, [data, setValue])
+
 
   const priority = watch("priority")
-  const progress = watch("progress")
-
+  const updateTaskMutation = useMutation({
+    mutationFn: async ({ formData, workspaceId, taskId }: { formData: CreateTaskFormData; workspaceId: string, taskId: string }) =>
+      await updateTask(formData, workspaceId, taskId),
+    onSuccess: () => {
+      toast.success("Task updated!");
+      refetch()
+    },
+    onError: () => {
+      toast.error("Something went wrong");
+    },
+    onSettled(data) {
+      if (data) console.log("Task creation response:", data);
+    },
+  });
 
   const onSubmit: SubmitHandler<CreateTaskFormData> = (data) => {
-    const startedDateUTC = new Date(data.startedDate).toISOString();
+    const startedDateUTC = new Date(data.startDate).toISOString();
     const dueDateUTC = new Date(data.dueDate).toISOString();
 
     const finalData = {
       ...data,
-      startedDate: startedDateUTC,
+      startDate: startedDateUTC,
       dueDate: dueDateUTC,
     };
+    updateTaskMutation.mutate({
+      formData: finalData,
+      workspaceId: workspaceId,
+      taskId: taskId
+    });
 
-    console.log(finalData);
   };
   const addTodo = () => {
     append({ name: "Default Todo ", checked: false });
@@ -138,7 +155,7 @@ function RouteComponent() {
           onSubmit={handleSubmit(onSubmit)}
         >
           <h1 className="text-3xl text-center py-4 font-semibold text-indigo-500">
-            Create A Task
+            Update A Task
           </h1>
 
           {/* ************************************** Title *************************************  */}
@@ -171,64 +188,36 @@ function RouteComponent() {
             <p className="text-red-500 text-sm">{errors.description.message}</p>
           )}
 
-          <div className="flex justify-between mt-4 ">
-            {/* *****************************   Select for Priority  ******************************************/}
-            <div className="flex flex-col gap-4">
-              <Select
-                value={priority}
-                onValueChange={(value: "LOW" | "MEDIUM" | "HIGH") =>
-                  setValue("priority", value, { shouldValidate: true })
-                }
-              >
-                <SelectTrigger className="w-[180px] outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  <SelectValue placeholder="PRIORITY" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-700 font-semibold">
-                  <SelectItem value="LOW">LOW</SelectItem>
-                  <SelectItem value="HIGH">HIGH</SelectItem>
-                  <SelectItem value="MEDIUM">MEDIUM</SelectItem>
-                </SelectContent>
-              </Select>
-              <input
-                type="hidden"
-                {...register("priority", { required: "Priority is required" })}
-              />
+          {/* *****************************   Select for Priority  ******************************************/}
+          <div className="flex flex-col gap-2 mt-2">
+            <label htmlFor="" className='text-md font-medium'>Priority</label>
+            <Select
+              value={priority}
+              onValueChange={(value: "LOW" | "MEDIUM" | "HIGH") =>
+                setValue("priority", value, { shouldValidate: true })
+              }
+            >
+              <SelectTrigger className="w-[180px] outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <SelectValue placeholder="PRIORITY" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-700 font-semibold">
+                <SelectItem value="LOW">LOW</SelectItem>
+                <SelectItem value="HIGH">HIGH</SelectItem>
+                <SelectItem value="MEDIUM">MEDIUM</SelectItem>
+              </SelectContent>
+            </Select>
+            <input
+              type="hidden"
+              {...register("priority", { required: "Priority is required" })}
+            />
 
-              {errors.priority && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.priority.message}
-                </p>
-              )}
-            </div>
-            {/* *****************************   Select for Progress ******************************************/}
-            <div className="flex flex-col gap-4">
-              <Select
-                value={progress}
-                onValueChange={(
-                  value: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE"
-                ) => setValue("progress", value, { shouldValidate: true })}
-              >
-                <SelectTrigger className="w-[180px] outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  <SelectValue placeholder="PROGRESS" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-700 font-semibold">
-                  <SelectItem value="IN_PROGRESS">IN_PROGRESS</SelectItem>
-                  <SelectItem value="PENDING">PENDING</SelectItem>
-                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                  <SelectItem value="OVERDUE">OVERDUE</SelectItem>
-                </SelectContent>
-              </Select>
-              <input
-                type="hidden"
-                {...register("progress", { required: "Progress is required" })}
-              />
-              {errors.progress && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.progress.message}
-                </p>
-              )}
-            </div>
+            {errors.priority && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.priority.message}
+              </p>
+            )}
           </div>
+
           {/* *********************************************** Task Todo ********************************************* */}
 
           <TaskTodo
@@ -250,24 +239,24 @@ function RouteComponent() {
               </label>
               <input
                 type="date"
-                {...register("startedDate", {
+                {...register("startDate", {
                   required: "Start date is required",
-                  validate: (value) => {
-                    const today = new Date();
-                    const selectedDate = new Date(value);
-                    today.setHours(0, 0, 0, 0);
-                    selectedDate.setHours(0, 0, 0, 0);
-                    return (
-                      selectedDate >= today ||
-                      "Start date cannot be in the past"
-                    );
-                  },
+                  // validate: (value) => {
+                  //   const today = new Date();
+                  //   const selectedDate = new Date(value);
+                  //   today.setHours(0, 0, 0, 0);
+                  //   selectedDate.setHours(0, 0, 0, 0);
+                  //   return (
+                  //     selectedDate >= today ||
+                  //     "Start date cannot be in the past"
+                  //   );
+                  // },
                 })}
                 className="outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500  placeholder:italic px-4 py-2 rounded-md"
               />
-              {errors.startedDate && (
+              {errors.startDate && (
                 <p className="text-red-500 text-sm">
-                  {errors.startedDate.message}
+                  {errors.startDate.message}
                 </p>
               )}
             </div>
@@ -282,7 +271,7 @@ function RouteComponent() {
                 {...register("dueDate", {
                   required: "Due date is required",
                   validate: (value) => {
-                    const start = new Date(watch("startedDate"));
+                    const start = new Date(watch("startDate"));
                     const due = new Date(value);
                     start.setHours(0, 0, 0, 0);
                     due.setHours(0, 0, 0, 0);
@@ -299,13 +288,15 @@ function RouteComponent() {
             </div>
           </div>
 
-          {/* <AssignUser
+          <AssignedUserEdit
             append={addUser}
             remove={removeUser}
-            fields={assignedTo as unknown as User[]}
+            fields={assignedTo as unknown as Member[]}
             errors={errors}
             workspaceId={workspaceId}
-          /> */}
+            isAssigned={isAssigned}
+            setIsAssigned={setIsAssigned}
+          />
 
           <Button type="submit" className="py-2 my-4">
             Submit

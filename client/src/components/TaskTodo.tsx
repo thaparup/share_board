@@ -66,10 +66,7 @@ const TaskTodo = ({ fields, append, remove, errors, register }: Props) => {
                     {errors.checklist?.root?.message}
                 </p>
             )}
-            {/* 
-            <Button  type="submit" className="w-fit mx-auto px-4 mb-12 mt-8">
-                Add Todo
-            </Button> */}
+
             <Button onClick={() => append({ name: "", checked: false })} type="button" className="my-8 w-fit mx-auto px-8">
                 Add Todo
             </Button>

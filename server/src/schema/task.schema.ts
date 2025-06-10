@@ -14,9 +14,9 @@ const checklistItemSchema = z.object({
 });
 
 const assignedUserArraySchemaItem = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string(),
+  memberId: z.string(),
+  memberName: z.string(),
+  memberEmail: z.string(),
 });
 export const assignedUserArraySchema = z
   .array(assignedUserArraySchemaItem)
@@ -29,9 +29,8 @@ export const createTaskSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().nonempty(),
   priority: z.enum(PRIORITY_VALUES),
-  progress: z.enum(PROGRESS_VALUES),
   dueDate: z.string().datetime(),
-  startedDate: z.string().datetime(),
+  startDate: z.string().datetime(),
   checklist: checklistArraySchema,
   assignedTo: assignedUserArraySchema,
 });

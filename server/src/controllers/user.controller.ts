@@ -25,7 +25,6 @@ export async function createUser(req: Request, res: Response) {
       res.status(409).json({ message: "User with this email already exists" });
       return;
     }
-
     const hashedPassword = await bcrypt.hash(parsed.data.password, 10);
     const user = await prisma.user.create({
       data: {
@@ -151,3 +150,108 @@ export async function getAllUsers(req: Request, res: Response) {
     res.status(400).json({ message: "users fetching failed" });
   }
 }
+
+export async function searchUsers(req: Request, res: Response) {
+  try {
+    const { query } = req.query;
+
+    if (!query || typeof query !== "string") {
+      return res
+        .status(400)
+        .json({ message: "Search query is required and must be a string." });
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query as string,
+              mode: "insensitive",
+            },
+          },
+          {
+            email: {
+              contains: query as string,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarImage: true,
+      },
+      take: 20,
+    });
+
+    res.status(200).json({
+      message: "Users fetched successfully",
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error searching users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+// export async function searchUsers(req: Request, res: Response) {
+//   try {
+//     const search = (req.query.query as string | undefined)?.toLowerCase() || "";
+//     const workspaceId = req.query.workspaceId as string | undefined;
+
+//     // If workspaceId is provided, get existing members to exclude them
+//     let excludeUserIds: string[] = [];
+
+//     if (workspaceId) {
+//       const existingMembers = await prisma.workspaceMember.findMany({
+//         where: {
+//           workspaceId: workspaceId,
+//         },
+//         select: {
+//           memberId: true,
+//         },
+//       });
+
+//       excludeUserIds = existingMembers.map((member) => member.memberId);
+//     }
+
+//     const users = await prisma.user.findMany({
+//       where: {
+//         AND: [
+//           // Search criteria
+//           {
+//             OR: [
+//               { name: { contains: search, mode: "insensitive" } },
+//               { email: { contains: search, mode: "insensitive" } },
+//             ],
+//           },
+//           // Exclude existing workspace members
+//           ...(excludeUserIds.length > 0
+//             ? [
+//                 {
+//                   id: {
+//                     notIn: excludeUserIds,
+//                   },
+//                 },
+//               ]
+//             : []),
+//         ],
+//       },
+//       select: {
+//         id: true,
+//         name: true,
+//         email: true,
+//         avatarImage: true,
+//       },
+//       take: 20,
+//     });
+
+//     res.status(200).json({ message: "Users fetched", data: users });
+//   } catch (error) {
+//     console.error("Error fetching users:", error);
+//     res.status(500).json({ message: "Failed to fetch users" });
+//   }
+// }

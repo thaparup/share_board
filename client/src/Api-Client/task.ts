@@ -5,6 +5,7 @@ import {
   TasksWhereUserIsAdmin,
 } from "../types/task.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const fetchTaskId = async (
   workspaceId: string,
@@ -33,19 +34,14 @@ export const useFetchTaskById = (workspaceId: string, taskId: string) =>
     enabled: true,
   });
 
-const createTask = async (
+export const createTask = async (
   formData: CreateTaskFormData,
   workspaceId: string
 ) => {
   try {
-    console.log(formData);
     const response = await axios.post(`/api/task/${workspaceId}`, formData, {
       withCredentials: true,
     });
-
-    if (response.status !== 200) {
-      throw new Error("couldn't create a workspace");
-    }
 
     return response.data;
   } catch (error) {
@@ -53,16 +49,24 @@ const createTask = async (
   }
 };
 
-export const useMutationCreateTask = () => {
-  return useMutation({
-    mutationFn: ({
+export const updateTask = async (
+  formData: CreateTaskFormData,
+  workspaceId: string,
+  taskId: string
+) => {
+  try {
+    const response = await axios.patch(
+      `/api/task/${workspaceId}/${taskId}`,
       formData,
-      workspaceId,
-    }: {
-      formData: CreateTaskFormData;
-      workspaceId: string;
-    }) => createTask(formData, workspaceId),
-  });
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error("couldn't create a workspace");
+  }
 };
 
 const fetchTaskWhereUserIsAdmin = async (): Promise<TasksWhereUserIsAdmin> => {

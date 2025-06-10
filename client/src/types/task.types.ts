@@ -44,21 +44,20 @@ type Checklist = {
 };
 
 type AssignedTo = {
-  id: string;
-  name: string;
-  email: string;
-  avatarImage: string;
+  memberId: string;
+  memberName: string;
+  memberEmail: string;
+  memberAvatarImage: string;
 };
 export type CreateTaskFormData = {
   id: string;
   name: string;
   description: string;
   priority: "LOW" | "HIGH" | "MEDIUM";
-  progress: "IN_PROGRESS" | "PENDING" | "COMPLETED" | "OVERDUE";
   checklist: Checklist[];
-  assignedTo: AssignedTo[];
+  assignedTo?: AssignedTo[];
   dueDate: string;
-  startedDate: string;
+  startDate: string;
 };
 
 export type TasksWhereUserIsAdmin = {

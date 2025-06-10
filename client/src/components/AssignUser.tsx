@@ -2,42 +2,41 @@ import React from 'react';
 import { Search, UserPlus, X, Check } from 'lucide-react';
 import { FieldArrayWithId } from 'react-hook-form';
 
-type User = {
-    id: string;
-    name: string;
-    email: string;
-    avatarImage: string;
-};
 
 type Props = {
-    fields: FieldArrayWithId<CreateTaskFormData, "assignedTo", "id">[];
-    append: (user: User) => void;
+    fields: FieldArrayWithId<CreateTaskFormData, "assignedTo", "memberId">[];
+    append: (user: Member) => void;
     remove: (index: number) => void;
     errors?: any
     workspaceId: string
+    isAssigned: boolean,
+    setIsAssigned: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 import { CreateTaskFormData } from '../types/task.types';
 import { useQueryFetchExsitingMemberOnTheWorkspace } from '../Api-Client/member';
+import { Member } from '../types/member.types';
 
-const AssignUser = ({ fields, append, remove, errors, workspaceId }: Props) => {
+const AssignUser = ({ fields, append, remove, errors, workspaceId, isAssigned, setIsAssigned }: Props) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const { data: users, isLoading } = useQueryFetchExsitingMemberOnTheWorkspace(`${workspaceId}`);
 
 
     const filteredUsers =
-        users?.data?.filter(
-            (user: User) =>
-                user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                user.email.toLowerCase().includes(searchQuery.toLowerCase())
-        ) || [];
+        (users?.data as Member[])?.filter((user) => {
+            const name = user.memberName?.toLowerCase() || '';
+            const email = user.memberEmail?.toLowerCase() || '';
+            const query = searchQuery.toLowerCase();
+
+            return name.includes(query) || email.includes(query);
+        }) || [];
 
     const isUserSelected = (userEmail: string) => {
-        return fields.some((user) => user.email === userEmail);
+        return fields.some((user) => user.memberEmail === userEmail);
     };
 
-    const toggleUserSelection = (user: User) => {
-        const index = fields.findIndex((u) => u.email === user.email);
+    const toggleUserSelection = (user: Member) => {
+        const index = fields.findIndex((u) => u.memberEmail === user.memberEmail);
         if (index !== -1) {
             remove(index);
         } else {
@@ -48,7 +47,7 @@ const AssignUser = ({ fields, append, remove, errors, workspaceId }: Props) => {
     };
 
     const removeSelectedUser = (userId: string) => {
-        const index = fields.findIndex((user) => user.id === userId);
+        const index = fields.findIndex((user) => user.memberId === userId);
         if (index !== -1) {
             remove(index);
         }
@@ -56,6 +55,9 @@ const AssignUser = ({ fields, append, remove, errors, workspaceId }: Props) => {
 
     return (
         <div className="px-8 py-12 bg-gray-900 border-gray-800 w-full mt-12 rounded-md">
+            {isAssigned && (
+                <p className="text-sm text-red-500 mt-1">At least one user  must be there</p>
+            )}
             <h6 className="text-2xl font-semibold text-white">
                 Assign Task To Workspace Members
             </h6>
@@ -83,19 +85,19 @@ const AssignUser = ({ fields, append, remove, errors, workspaceId }: Props) => {
                     <h4 className="text-sm font-medium text-gray-400 mb-2">Selected Users</h4>
                     <div className="flex flex-wrap gap-2">
                         {fields.map((user) => (
-                            <div key={user.id} className="flex items-center bg-gray-800 rounded-full pl-2 pr-1 py-1">
-                                {user.avatarImage ? (
-                                    <img src={user.avatarImage} alt={user.name} className="w-5 h-5 rounded-full mr-1" />
+                            <div key={user.memberId} className="flex items-center bg-gray-800 rounded-full pl-2 pr-1 py-1">
+                                {user.memberAvatarImage ? (
+                                    <img src={user.memberAvatarImage} alt={user.memberName} className="w-5 h-5 rounded-full mr-1" />
                                 ) : (
                                     <div className="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center mr-1">
                                         <span className="text-white text-xs font-bold">
-                                            {user.name.charAt(0).toUpperCase()}
+                                            {user.memberName.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
                                 )}
-                                <span className="text-sm text-white mr-1">{user.name}</span>
+                                <span className="text-sm text-white mr-1">{user.memberName}</span>
                                 <button
-                                    onClick={() => removeSelectedUser(user.id)}
+                                    onClick={() => removeSelectedUser(user.memberId)}
                                     className="text-gray-400 hover:text-white p-1 rounded-full"
                                 >
                                     <X size={14} />
@@ -117,41 +119,41 @@ const AssignUser = ({ fields, append, remove, errors, workspaceId }: Props) => {
                     </div>
                 ) : searchQuery ? (
                     <div className="space-y-2">
-                        {filteredUsers.map((user) => (
+                        {filteredUsers.map((member) => (
                             <div
-                                key={user.id}
-                                className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${isUserSelected(user.id)
+                                key={member.memberId}
+                                className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${isUserSelected(member.memberId)
                                     ? 'bg-indigo-900/30'
                                     : 'bg-gray-800 hover:bg-gray-700'
                                     }`}
-                                onClick={() => toggleUserSelection(user)}
+                                onClick={() => toggleUserSelection(member)}
                             >
                                 <div className="flex items-center">
-                                    {user.avatarImage ? (
+                                    {member.memberAvatarImage ? (
                                         <img
-                                            src={user.avatarImage}
-                                            alt={user.name}
+                                            src={member.memberAvatarImage}
+                                            alt={member.memberName}
                                             className="w-8 h-8 rounded-full mr-3"
                                         />
                                     ) : (
                                         <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center mr-3">
                                             <span className="text-white font-medium text-sm">
-                                                {user.name.charAt(0).toUpperCase()}
+                                                {member.memberName.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
                                     )}
                                     <div>
-                                        <p className="text-white font-medium">{user.name}</p>
-                                        <p className="text-gray-400 text-sm">{user.email}</p>
+                                        <p className="text-white font-medium">{member.memberName}</p>
+                                        <p className="text-gray-400 text-sm">{member.memberEmail}</p>
                                     </div>
                                 </div>
                                 <div
-                                    className={`w-6 h-6 rounded-full flex items-center justify-center ${isUserSelected(user.email)
+                                    className={`w-6 h-6 rounded-full flex items-center justify-center ${isUserSelected(member.memberEmail)
                                         ? 'bg-indigo-600 text-white'
                                         : 'border border-gray-600'
                                         }`}
                                 >
-                                    {isUserSelected(user.email) && <Check size={14} />}
+                                    {isUserSelected(member.memberEmail) && <Check size={14} />}
                                 </div>
                             </div>
                         ))}

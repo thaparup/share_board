@@ -13,8 +13,7 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
 import AssignUser from "../components/AssignUser";
-import { User } from "../types/auth.types";
-import { useMutationCreateTask } from "../Api-Client/task";
+import { createTask, } from "../Api-Client/task";
 import {
   FormProvider,
   SubmitHandler,
@@ -25,6 +24,10 @@ import { CreateTaskFormData } from "../types/task.types";
 import toast from "react-hot-toast";
 import TaskTodo from "../components/TaskTodo";
 import { useQueryFetchExsitingMemberOnTheWorkspace } from "../Api-Client/member";
+import { Member } from "../types/member.types";
+import { useState } from "react";
+import { useAuthStore } from "../store/auth.store";
+import { useMutation } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/workspaces_/$workspaceId/task/create")({
   loader: async ({ params }) => {
@@ -42,10 +45,9 @@ function RouteComponent() {
   const { data: existingMembers } = useQueryFetchExsitingMemberOnTheWorkspace(
     `${workspaceId}`
   );
-  console.log(existingMembers);
 
-  const useCreateTask = useMutationCreateTask();
   const nav = useNavigate();
+  const user = useAuthStore();
 
   const methods = useForm<CreateTaskFormData>({
     defaultValues: {
@@ -62,6 +64,7 @@ function RouteComponent() {
     handleSubmit,
     formState: { errors },
     control,
+    reset,
     setValue,
     watch,
   } = methods;
@@ -73,36 +76,61 @@ function RouteComponent() {
   } = useFieldArray({
     name: "assignedTo",
     control,
-    keyName: "id", // optional
+    keyName: "memberId",
     rules: {
-      validate: (value) => {
-        return value.length > 0 || "At least one assignee is required";
-      },
+      // validate: (value) => {
+      //   return value.length > 0 || "At least one assignee is required";
+      // },
     },
   });
 
+
+  const [isAssigned, setIsAssigned] = useState(false);
   const { fields, append, remove } = useFieldArray({
     name: "checklist",
     control,
     keyName: "id",
     rules: {
       validate: (value) => {
-        return value.length > 0 || "At least one checklist item is required";
+        return value.length > 0 || "At least one task todo is required";
       },
+    },
+  });
+  const mutation = useMutation({
+    mutationFn: async ({ formData, workspaceId }: { formData: CreateTaskFormData; workspaceId: string }) =>
+      await createTask(formData, workspaceId),
+    onSuccess: () => {
+      toast.success("Task created!");
+      reset()
+    },
+    onError: () => {
+      toast.error("Something went wrong");
+    },
+    onSettled(data) {
+      if (data) console.log("Task creation response:", data);
     },
   });
 
   const onSubmit: SubmitHandler<CreateTaskFormData> = (data) => {
-    const startedDateUTC = new Date(data.startedDate).toISOString();
+    if (assignedTo.length === 0) {
+      setIsAssigned(true);
+      return;
+    }
+    setIsAssigned(false);
+
+    const startedDateUTC = new Date(data.startDate).toISOString();
     const dueDateUTC = new Date(data.dueDate).toISOString();
 
     const finalData = {
       ...data,
-      startedDate: startedDateUTC,
+      startDate: startedDateUTC,
       dueDate: dueDateUTC,
     };
+    mutation.mutate({
+      formData: finalData,
+      workspaceId: workspaceId,
+    });
 
-    console.log(finalData);
   };
   const addTodo = () => {
     append({ name: "Default Todo ", checked: false });
@@ -110,13 +138,13 @@ function RouteComponent() {
 
   return (
     <div className="py-8 pb-20">
-      <button
+      <Button
         onClick={() => window.history.back()}
         className="flex items-center mb-6 ml-4 text-blue-400 hover:text-blue-500 transition-colors"
       >
         <ArrowLeft className="mr-2" />
         Back to Workspace
-      </button>
+      </Button>
 
       <FormProvider {...methods}>
         <form
@@ -185,7 +213,7 @@ function RouteComponent() {
                 </p>
               )}
             </div>
-            {/* *****************************   Select for Progress ******************************************/}
+            {/* *****************************   Select for Progress *****************************************
             <div className="flex flex-col gap-4">
               <Select
                 onValueChange={(
@@ -211,7 +239,7 @@ function RouteComponent() {
                   {errors.progress.message}
                 </p>
               )}
-            </div>
+            </div> */}
           </div>
           {/* *********************************************** Task Todo ********************************************* */}
 
@@ -234,7 +262,7 @@ function RouteComponent() {
               </label>
               <input
                 type="date"
-                {...register("startedDate", {
+                {...register("startDate", {
                   required: "Start date is required",
                   validate: (value) => {
                     const today = new Date();
@@ -249,9 +277,9 @@ function RouteComponent() {
                 })}
                 className="outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500  placeholder:italic px-4 py-2 rounded-md"
               />
-              {errors.startedDate && (
+              {errors.startDate && (
                 <p className="text-red-500 text-sm">
-                  {errors.startedDate.message}
+                  {errors.startDate.message}
                 </p>
               )}
             </div>
@@ -266,7 +294,7 @@ function RouteComponent() {
                 {...register("dueDate", {
                   required: "Due date is required",
                   validate: (value) => {
-                    const start = new Date(watch("startedDate"));
+                    const start = new Date(watch("startDate"));
                     const due = new Date(value);
                     start.setHours(0, 0, 0, 0);
                     due.setHours(0, 0, 0, 0);
@@ -286,9 +314,11 @@ function RouteComponent() {
           <AssignUser
             append={addUser}
             remove={removeUser}
-            fields={assignedTo as unknown as User[]}
+            fields={assignedTo as unknown as Member[]}
             errors={errors}
             workspaceId={workspaceId}
+            isAssigned={isAssigned}
+            setIsAssigned={setIsAssigned}
           />
 
           <Button type="submit" className="py-2 my-4">

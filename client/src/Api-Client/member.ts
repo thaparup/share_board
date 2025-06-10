@@ -5,7 +5,7 @@ import { ExistingMemberResponse } from "../types/workspace.types";
 import { User } from "../types/auth.types";
 import { useQueryFetchWorkspaceById } from "./workspace";
 
-export const addMember = async (formData: Member[], workspaceId: string) => {
+export const addMember = async (formData: User[], workspaceId: string) => {
   try {
     const response = await axios.post(`/api/member/${workspaceId}`, formData, {
       withCredentials: true,

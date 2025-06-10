@@ -95,7 +95,7 @@ export const getAllWorkspace = async (req: Request, res: Response) => {
       },
       select: {
         workspaceId: true,
-        progress: true,
+        completed: true,
       },
     });
 
@@ -109,14 +109,14 @@ export const getAllWorkspace = async (req: Request, res: Response) => {
     });
 
     const taskMap: Record<string, number> = {};
-    tasks.forEach(({ workspaceId, progress }) => {
+    tasks.forEach(({ workspaceId }) => {
       taskMap[workspaceId] = (taskMap[workspaceId] || 0) + 1;
     });
 
     const completedTaskForWorkspace: Record<string, number> = {};
 
-    tasks.forEach(({ workspaceId, progress }) => {
-      if (progress === "COMPLETED") {
+    tasks.forEach(({ workspaceId, completed }) => {
+      if (completed) {
         completedTaskForWorkspace[workspaceId] =
           (completedTaskForWorkspace[workspaceId] || 0) + 1;
       }

@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  SigninFormData,
-  SignupFormData,
-  User,
-  UsersResponse,
-} from "../types/auth.types";
+import { SigninFormData, SignupFormData, User } from "../types/auth.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const userSignup = async (formData: SignupFormData) => {
@@ -75,6 +70,60 @@ export const fetchAllUsers = async (): Promise<UsersResponse> => {
     throw new Error("Network response was not ok");
   }
 };
+
+interface UsersResponse {
+  message: string;
+  data: User[];
+}
+
+export const searchUsersApi = async (query: string): Promise<UsersResponse> => {
+  try {
+    const response = await axios.get(
+      `/api/user/search?query=${encodeURIComponent(query)}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Network response was not ok");
+  }
+};
+
+export const useQuerySearchUsers = (workspaceId: string, query: string) => {
+  // return useQuery<UsersResponse, Error>({
+  //   queryKey: ["users", "search", searchQuery],
+  //   queryFn: () => searchUsersApi(searchQuery),
+  //   enabled: !!searchQuery,
+  // });
+  return useQuery({
+    queryKey: ["search-users", workspaceId, query],
+    queryFn: async () => {
+      const res = await axios.get("/api/users/search", {
+        params: {
+          query,
+          workspaceId,
+        },
+      });
+      return res.data;
+    },
+    enabled: query.length > 0,
+  });
+};
+
+// export const useSearchUsers = (workspaceId: string, query: string) => {
+//   return useQuery({
+//     queryKey: ["search-users", workspaceId, query],
+//     queryFn: async () => {
+//       const res = await axios.get("/api/users/search", {
+//         params: {
+//           query,
+//           workspaceId,
+//         },
+//       });
+//       return res.data;
+//     },
+//     enabled: query.length > 0,
+//   });
+// };
 
 export const useQueryFetchAllUsers = () =>
   useQuery({ queryKey: ["users"], queryFn: fetchAllUsers });

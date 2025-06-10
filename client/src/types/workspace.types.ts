@@ -42,10 +42,10 @@ export type WorkspaceById = {
 };
 
 type ExistingMember = {
-  id: string;
-  name: string;
-  email: string;
-  avatarImage: string;
+  memberId: string;
+  memberName: string;
+  memberEmail: string;
+  memberAvatarImage: string;
 };
 export type ExistingMemberResponse = {
   message: string;
