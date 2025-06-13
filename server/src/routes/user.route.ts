@@ -8,10 +8,19 @@ import {
   searchUsers,
 } from "../controllers/user.controller";
 import { verifyJwt } from "../middleware/auth.middleware";
+import multer from "multer";
+import { upload, uploadFile } from "../middleware/image.middleware";
 
 const router = Router();
+const allowedExtensions = ["jpg", "jpeg", "png", "webp", "avif"];
+const maxFileSizeMB = 5;
 
-router.route("/").post(createUser);
+router
+  .route("/")
+  .post(
+    uploadFile(allowedExtensions, maxFileSizeMB).single("avatarImageFile"),
+    createUser
+  );
 router.route("/auth/login").post(loginUser);
 router.route("/auth/logout").post(verifyJwt, logoutUser);
 router.route("/auth/current_user").post(verifyJwt, fetchCurrentUser);

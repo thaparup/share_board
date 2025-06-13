@@ -2,7 +2,7 @@ type SignupFormData = {
   name: string;
   email: string;
   password: string;
-  avatarImage?: File;
+  avatarImageFile?: File;
 };
 
 type SigninFormData = {

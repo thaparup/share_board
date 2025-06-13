@@ -5,9 +5,43 @@ import bcrypt from "bcrypt";
 import { SignJWT } from "jose";
 import { serialize } from "cookie";
 import { ALG, COOKIE, COOKIE_NAME, KEY } from "../utils/auth";
+import fs from "node:fs"; // Import the fs module
+
+import { v2 as cloudinary } from "cloudinary";
+import { cloudinaryConfig } from "../../cloudinary.config";
 const prisma = new PrismaClient();
 
 export async function createUser(req: Request, res: Response) {
+  const existingUser = await prisma.user.findUnique({
+    where: { email: req.body.email },
+  });
+
+  if (existingUser) {
+    res.status(409).json({
+      message: "Email already in use",
+      data: null,
+    });
+    return;
+  }
+
+  if (req.file) {
+    try {
+      cloudinaryConfig;
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "avatars",
+      });
+
+      req.body.avatarImage = result.secure_url || "";
+    } catch (error) {
+      fs.unlinkSync(req.file.path);
+      console.error("Cloudinary upload failed:", error);
+      res.status(500).json({ message: "Image upload failed" });
+      return;
+    } finally {
+      fs.unlinkSync(req.file.path);
+    }
+  }
+
   const parsed = registerUserSchema.safeParse(req.body);
   if (!parsed.success) {
     res
@@ -17,14 +51,6 @@ export async function createUser(req: Request, res: Response) {
   }
 
   try {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: parsed.data.email },
-    });
-
-    if (existingUser) {
-      res.status(409).json({ message: "User with this email already exists" });
-      return;
-    }
     const hashedPassword = await bcrypt.hash(parsed.data.password, 10);
     const user = await prisma.user.create({
       data: {
@@ -35,7 +61,6 @@ export async function createUser(req: Request, res: Response) {
       },
     });
     const { password, ...safeUser } = user;
-
     res.status(201).json({ message: "User created", data: { user: safeUser } });
     return;
   } catch (error) {

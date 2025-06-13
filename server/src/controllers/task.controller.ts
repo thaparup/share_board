@@ -5,15 +5,15 @@ import { createTaskSchema } from "../schema/task.schema";
 const prisma = new PrismaClient();
 export async function getAllTasks(req: Request, res: Response) {
   try {
-    const workspaceId = req.params.id;
-    const tasksOfAWorkspace = await prisma.task.findMany({
-      where: { workspaceId: workspaceId },
-    });
+    // const workspaceId = req.params.id;
+    // const tasksOfAWorkspace = await prisma.task.findMany({
+    //   where: { workspaceId: workspaceId },
+    // });
 
-    res.status(200).json({
-      message: "All tasks for the workspace",
-      data: tasksOfAWorkspace,
-    });
+    // res.status(200).json({
+    //   message: "All tasks for the workspace",
+    //   data: tasksOfAWorkspace,
+    // });
     return;
   } catch (error) {}
 }
@@ -348,7 +348,6 @@ export async function getAllTaskWhereTheUserIsAdmin(
       },
     });
 
-    console.log(tasksInOtherWorkspaces);
     res.status(200);
     res.json({
       message: "tasks where the user is the admin",
@@ -360,5 +359,46 @@ export async function getAllTaskWhereTheUserIsAdmin(
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getAllAssignedTask(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const allTasksId = await prisma.taskAssignment.findMany({
+      where: {
+        assignedUserId: userId,
+      },
+      select: {
+        taskId: true,
+      },
+    });
+
+    const taskIds = allTasksId.map((item) => item.taskId);
+    const allTasks = await prisma.task.findMany({
+      where: {
+        id: {
+          in: taskIds,
+        },
+      },
+    });
+    res.json({
+      message: "tasks where the user is the admin",
+      data: {
+        tasks: allTasks,
+      },
+    });
+
+    return;
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve assigned tasks" });
+    return;
   }
 }

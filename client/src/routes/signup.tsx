@@ -18,21 +18,32 @@ function RouteComponent() {
     register,
     handleSubmit,
     setValue,
+    setError,
+    clearErrors,
     reset,
     formState: { errors },
   } = useForm<SignupFormData>();
   const signupMutation = useMutationUserSignup()
+
+
+
+
   const onSubmit: SubmitHandler<SignupFormData> = (data) => {
-    console.log(data)
     signupMutation.mutate(data, {
       onSuccess: (serverData) => {
-        toast.success('Account created!')
-
+        toast.success(serverData.message)
         reset()
         nav({ to: '/login' })
       },
       onError: (error: any) => {
-        toast.error(error?.message || 'Signup failed')
+        let message = 'Signup failed';
+
+        if (typeof error === 'string') {
+          message = error;
+        }
+
+
+        toast.error(message);
       },
     })
   }
@@ -83,21 +94,39 @@ function RouteComponent() {
             type="file"
             accept="image/*"
             className=''
+
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
-                if (file.size > 3 * 1024 * 1024) {
-                  alert("Image must be smaller than 3MB");
-                  e.target.value = ""; // clear file input
-                  setValue("avatarImage", undefined);
+                const isImage = file.type.startsWith("image/");
+                if (!isImage) {
+                  e.target.value = ""; // Clear file input
+                  setValue("avatarImageFile", undefined);
+                  setError("avatarImageFile", {
+                    type: "manual",
+                    message: "Only image files are allowed",
+                  });
                   return;
                 }
-                setValue("avatarImage", file, { shouldValidate: true });
+
+                if (file.size > 5 * 1024 * 1024) {
+                  e.target.value = ""; // Clear file input
+                  setValue("avatarImageFile", undefined);
+                  setError("avatarImageFile", {
+                    type: "manual",
+                    message: "Image must be smaller than 5MB",
+                  });
+                  return;
+                }
+
+                clearErrors("avatarImageFile"); // Clear any previous errors
+                setValue("avatarImageFile", file, { shouldValidate: true });
               }
             }}
+
           />
-          {errors.avatarImage && (
-            <p className="text-red-500 text-sm">{errors.avatarImage.message}</p>
+          {errors.avatarImageFile && (
+            <p className="text-red-500 text-sm">{errors.avatarImageFile.message}</p>
           )}
 
 

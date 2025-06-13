@@ -5,6 +5,7 @@ import {
     Folder,
     CheckSquare,
     LogOut,
+    Tent,
 } from 'lucide-react'
 import { useAuthStore } from '../store/auth.store'
 import { useMutationLogout } from '../Api-Client/auth'
@@ -19,6 +20,7 @@ const Sidebar = () => {
         { name: 'Dashboard', icon: <LayoutDashboard size={18} />, to: '/dashboard' },
         { name: 'Workspaces', icon: <Folder size={18} />, to: '/workspaces' },
         { name: 'Manage Tasks', icon: <CheckSquare size={18} />, to: '/tasks/manage' },
+        { name: 'Task Assigned', icon: <Tent size={18} />, to: '/assigned/tasks' },
         { name: 'Logout', icon: <LogOut size={18} />, to: '/logout' },
     ]
     return (

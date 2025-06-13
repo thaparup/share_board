@@ -6,6 +6,7 @@ const registerUserSchema = z.object({
     .string({ required_error: "Email is required" })
     .email({ message: "Invalid email address" }),
 
+  avatarImageFile: z.instanceof(File).optional(),
   avatarImage: z.string().optional(),
 
   password: z

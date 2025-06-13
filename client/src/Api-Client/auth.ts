@@ -2,7 +2,15 @@ import axios from "axios";
 import { SigninFormData, SignupFormData, User } from "../types/auth.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const userSignup = async (formData: SignupFormData) => {
+export const userSignup = async (data: SignupFormData) => {
+  const formData = new FormData();
+  formData.append("name", data.name);
+  formData.append("email", data.email);
+  formData.append("password", data.password);
+
+  if (data.avatarImageFile instanceof File) {
+    formData.append("avatarImageFile", data.avatarImageFile);
+  }
   try {
     const response = await axios.post("/api/user", formData);
     return response.data;

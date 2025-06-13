@@ -111,3 +111,10 @@ export type TasksWhereUserIsAdmin = {
     taskWhereUserIsNotAdmin: WorkspaceWithTasks[];
   };
 };
+
+export type AssignedTasksResponse = {
+  message: string;
+  data: {
+    tasks: [];
+  };
+};
