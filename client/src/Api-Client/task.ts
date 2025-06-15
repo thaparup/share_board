@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   AssignedTasksResponse,
   CreateTaskFormData,
+  DeleteTaskResponse,
   GetTaskByIdResponse,
   TasksWhereUserIsAdmin,
 } from "../types/task.types";
@@ -18,11 +19,11 @@ const fetchTaskId = async (
     });
 
     if (response.status !== 200) {
-      throw new Error("couuld not fetch the workspace");
+      throw new Error("Could not delete the task");
     }
     return response.data;
   } catch (error) {
-    throw new Error("Could not fetch data");
+    throw new Error("Could not delete the task");
   }
 };
 
@@ -34,6 +35,23 @@ export const useFetchTaskById = (workspaceId: string, taskId: string) =>
     },
     enabled: true,
   });
+
+export const deleteTask = async (
+  taskId: string
+): Promise<DeleteTaskResponse> => {
+  try {
+    const response = await axios.delete(`/api/task/${taskId}`, {
+      withCredentials: true,
+    });
+
+    if (response.status !== 200) {
+      throw new Error("couuld not fetch the workspace");
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error("Could not fetch data");
+  }
+};
 
 export const createTask = async (
   formData: CreateTaskFormData,

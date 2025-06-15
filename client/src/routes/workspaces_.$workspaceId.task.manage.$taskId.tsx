@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { updateTask, useFetchTaskById } from '../Api-Client/task';
 import {
   Select,
@@ -9,8 +9,8 @@ import {
 } from "../components/ui/select";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
-import AssignUser from "../components/AssignUser";
 import {
+  Controller,
   FormProvider,
   SubmitHandler,
   useFieldArray,
@@ -37,9 +37,11 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const nav = useNavigate({ from: '/workspaces/$workspaceId/task/manage/$taskId' })
 
   const { taskId, workspaceId } = Route.useLoaderData()
   const { data, refetch } = useFetchTaskById(workspaceId, taskId)
+  console.log(data)
   const [isAssigned, setIsAssigned] = useState(false)
   const methods = useForm<CreateTaskFormData>({
     defaultValues: {
@@ -47,6 +49,7 @@ function RouteComponent() {
       description: "",
       checklist: [],
       assignedTo: [],
+
     },
     mode: "onSubmit",
   });
@@ -103,7 +106,7 @@ function RouteComponent() {
           memberId: user.memberId,
           memberName: user.memberName,
           memberEmail: user.memberEmail,
-          memberAvatar: user.memberAvatarImage ?? "",
+          memberAvatarImage: user.memberAvatarImage ?? "",
         }))
       );
 
@@ -113,13 +116,13 @@ function RouteComponent() {
   }, [data, setValue])
 
 
-  const priority = watch("priority")
   const updateTaskMutation = useMutation({
     mutationFn: async ({ formData, workspaceId, taskId }: { formData: CreateTaskFormData; workspaceId: string, taskId: string }) =>
       await updateTask(formData, workspaceId, taskId),
     onSuccess: () => {
       toast.success("Task updated!");
       refetch()
+      nav({ to: '/workspaces/$workspaceId' })
     },
     onError: () => {
       toast.error("Something went wrong");
@@ -138,6 +141,7 @@ function RouteComponent() {
       startDate: startedDateUTC,
       dueDate: dueDateUTC,
     };
+    console.log(finalData)
     updateTaskMutation.mutate({
       formData: finalData,
       workspaceId: workspaceId,
@@ -201,7 +205,7 @@ function RouteComponent() {
           {/* *****************************   Select for Priority  ******************************************/}
           <div className="flex flex-col gap-2 mt-2">
             <label htmlFor="" className='text-md font-medium'>Priority</label>
-            <Select
+            {/* <Select
               value={priority}
               onValueChange={(value: "LOW" | "MEDIUM" | "HIGH") =>
                 setValue("priority", value, { shouldValidate: true })
@@ -215,11 +219,33 @@ function RouteComponent() {
                 <SelectItem value="HIGH">HIGH</SelectItem>
                 <SelectItem value="MEDIUM">MEDIUM</SelectItem>
               </SelectContent>
-            </Select>
-            <input
-              type="hidden"
-              {...register("priority", { required: "Priority is required" })}
+            </Select> */}
+
+
+            <Controller
+              name="priority"
+              control={control}
+              rules={{ required: "Priority is required" }}
+
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value: "LOW" | "MEDIUM" | "HIGH") => field.onChange(value)}
+                  defaultValue={data?.data.task.priority}
+                >
+                  <SelectTrigger className="w-[180px] outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <SelectValue placeholder="PRIORITY" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 font-semibold">
+                    <SelectItem value="LOW">LOW</SelectItem>
+                    <SelectItem value="HIGH">HIGH</SelectItem>
+                    <SelectItem value="MEDIUM">MEDIUM</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             />
+
+
 
             {errors.priority && (
               <p className="text-red-500 text-sm mt-1">
@@ -251,16 +277,7 @@ function RouteComponent() {
                 type="date"
                 {...register("startDate", {
                   required: "Start date is required",
-                  // validate: (value) => {
-                  //   const today = new Date();
-                  //   const selectedDate = new Date(value);
-                  //   today.setHours(0, 0, 0, 0);
-                  //   selectedDate.setHours(0, 0, 0, 0);
-                  //   return (
-                  //     selectedDate >= today ||
-                  //     "Start date cannot be in the past"
-                  //   );
-                  // },
+
                 })}
                 className="outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500  placeholder:italic px-4 py-2 rounded-md"
               />
@@ -308,7 +325,7 @@ function RouteComponent() {
             setIsAssigned={setIsAssigned}
           />
 
-          <Button type="submit" className="py-2 my-4">
+          <Button type="submit" className="py-2 my-4 bg-indigo-500">
             Submit
           </Button>
         </form>

@@ -6,6 +6,8 @@ import {
   loginUser,
   logoutUser,
   searchUsers,
+  validateToken,
+  valideateToken,
 } from "../controllers/user.controller";
 import { verifyJwt } from "../middleware/auth.middleware";
 import multer from "multer";
@@ -23,7 +25,7 @@ router
   );
 router.route("/auth/login").post(loginUser);
 router.route("/auth/logout").post(verifyJwt, logoutUser);
-router.route("/auth/current_user").post(verifyJwt, fetchCurrentUser);
+router.route("/auth/validate_token").post(verifyJwt, validateToken);
 router.route("/").get(verifyJwt, getAllUsers);
 router.route("/search").get(verifyJwt, searchUsers);
 export default router;

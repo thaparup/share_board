@@ -5,7 +5,6 @@ import Body from '../components/Body';
 export const Route = createFileRoute('/dashboard')({
 
     beforeLoad: async ({ context }) => {
-        console.log(context.auth.user)
         // if (!context.auth.isAuthenticated) {
         //     throw redirect({
         //         to: '/login',

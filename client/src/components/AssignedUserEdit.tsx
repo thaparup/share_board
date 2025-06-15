@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Search, UserPlus, X, Check } from 'lucide-react';
 import { FieldArrayWithId } from 'react-hook-form';
 
@@ -23,7 +23,6 @@ import { Member } from '../types/member.types';
 const AssignedUserEdit = ({ fields, append, remove, errors, workspaceId, isAssigned, setIsAssigned }: Props) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const { data: users, isLoading } = useQueryFetchExsitingMemberOnTheWorkspace(`${workspaceId}`);
-    console.log(users?.data)
 
     const filteredUsers =
         (users?.data as Member[])?.filter((user) => {
@@ -55,10 +54,9 @@ const AssignedUserEdit = ({ fields, append, remove, errors, workspaceId, isAssig
             remove(index);
         }
     };
-    console.log('fileds', fields)
     return (
 
-        <div>
+        <div className='mt-8'>
 
             {fields.length > 0 && (
                 <div className="mb-6 text-white">
@@ -88,7 +86,7 @@ const AssignedUserEdit = ({ fields, append, remove, errors, workspaceId, isAssig
                                 </div>
                                 <button
                                     onClick={() => removeSelectedUser(user.memberId)}
-                                    className="text-red-400 hover:text-red-600 transition"
+                                    className="text-red-400 hover:text-red-600 transition cursor-pointer"
                                     title="Remove"
                                 >
                                     <X />
@@ -111,7 +109,7 @@ const AssignedUserEdit = ({ fields, append, remove, errors, workspaceId, isAssig
                     Search and select users to add to your task.
                 </h6>
 
-                <div className="relative mt-12">
+                <div className="relative mt-8">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
                     <input
                         type="text"
@@ -127,7 +125,7 @@ const AssignedUserEdit = ({ fields, append, remove, errors, workspaceId, isAssig
                 )}
 
                 {fields.length > 0 && (
-                    <div className="mb-4">
+                    <div className="my-4">
                         <h4 className="text-sm font-medium text-gray-400 mb-2">Selected Users</h4>
                         <div className="flex flex-wrap gap-2">
                             {fields.map((user) => (

@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useFetchTaskById } from '../Api-Client/task';
 import { Task } from '../types/task.types';
 import Body from '../components/Body';
+import { Check, } from 'lucide-react';
 
 export const Route = createFileRoute('/workspaces_/$workspaceId/task/view/$taskId')({
   loader: async ({ params }) => {
@@ -45,11 +46,6 @@ function RouteComponent() {
 
 
 
-  const toggleChecklistItem = () => {
-    if (!data) return;
-    console.log('Checklist item toggled:', data.data.taskTodo);
-    // Normally, trigger an API mutation here
-  };
 
   if (isLoading) {
     return (
@@ -126,11 +122,13 @@ function RouteComponent() {
               <ul className="space-y-3">
 
                 {data?.data.taskTodo.map((todo) =>
-                  <li className="flex items-center">
+                  <li className="flex items-center gap-12">
 
                     <span className={todo.checked ? 'line-through text-gray-500' : 'text-gray-200'}>
                       {todo.name}
                     </span>
+                    {todo.checked && <Check size={20} className='bg-green-500' />
+                    }
                   </li>
                 )}
 

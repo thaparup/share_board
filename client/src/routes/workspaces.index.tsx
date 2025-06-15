@@ -1,16 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import Body from "../components/Body";
 import WorkspaceModal from "../components/WorkspaceModal";
 import WorkspaceCard from "../components/WorkspaceCard";
 import { useQueryAllWorkspace } from "../Api-Client/workspace";
 
 export const Route = createFileRoute("/workspaces/")({
+  beforeLoad: async ({ context }) => {
+
+    if (context.auth.user === null && !context.auth.isAuthenticated) {
+      throw redirect({ to: '/login' });
+    }
+  },
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const { data, isLoading } = useQueryAllWorkspace();
-
 
   return (
     <>
@@ -37,15 +42,15 @@ function RouteComponent() {
                               key={index}
                               workspaceId={workspace.id}
                               name={workspace.name}
-                              taskCompleted={workspace.taskCompleted}
+                              taskCompleted={workspace.taskCompleted!}
                               createdAt={new Date(
                                 workspace.createdAt
                               ).toLocaleDateString()}
                               workspaceCreatorName={
                                 workspace.workspaceCreatorName!
                               }
-                              totalMembers={workspace.totalMembers}
-                              totalTasks={workspace.totalTasks}
+                              totalMembers={workspace.totalMembers!}
+                              totalTasks={workspace.totalTasks!}
                             />
                           )
                         )}
@@ -69,15 +74,15 @@ function RouteComponent() {
                               key={index}
                               workspaceId={workspace.id}
                               name={workspace.name}
-                              taskCompleted={workspace.taskCompleted}
+                              taskCompleted={workspace.taskCompleted!}
                               createdAt={new Date(
                                 workspace.createdAt
                               ).toLocaleDateString()}
                               workspaceCreatorName={
                                 workspace.workspaceCreatorName!
                               }
-                              totalMembers={workspace.totalMembers}
-                              totalTasks={workspace.totalTasks}
+                              totalMembers={workspace.totalMembers!}
+                              totalTasks={workspace.totalTasks!}
                             />
                           )
                         )}

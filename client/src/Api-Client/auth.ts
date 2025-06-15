@@ -37,7 +37,7 @@ export const useMutationSignin = () => useMutation({ mutationFn: userSignin });
 export const fetchCurrentUser = async () => {
   try {
     const response = await axios.post(
-      "/api/user/auth/current_user",
+      "/api/user/auth/validate_token",
       {},
       { withCredentials: true }
     );

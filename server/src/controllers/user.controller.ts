@@ -26,7 +26,11 @@ export async function createUser(req: Request, res: Response) {
 
   if (req.file) {
     try {
-      cloudinaryConfig;
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECTRET,
+      });
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "avatars",
       });
@@ -94,6 +98,7 @@ export async function loginUser(req: Request, res: Response) {
       parsed.data.password,
       existedUser.password
     );
+
     if (!isPasswordValid) {
       res.status(400).json({ message: "User credentails is not valid" });
       return;
@@ -138,7 +143,7 @@ export async function logoutUser(req: Request, res: Response) {
   }
 }
 
-export async function fetchCurrentUser(req: Request, res: Response) {
+export async function validateToken(req: Request, res: Response) {
   try {
     const userId = req.user?.id;
     const existedUser = await prisma.user.findFirst({ where: { id: userId } });
@@ -152,7 +157,7 @@ export async function fetchCurrentUser(req: Request, res: Response) {
       data: {
         id: existedUser.id,
         name: existedUser.name,
-        email: existedUser.name,
+        email: existedUser.email,
         avatarImage: existedUser.avatarImage,
       },
     });

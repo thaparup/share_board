@@ -1,5 +1,6 @@
 import {
   createFileRoute,
+  redirect,
   useLoaderData,
   useNavigate,
 } from "@tanstack/react-router";
@@ -23,13 +24,17 @@ import {
 import { CreateTaskFormData } from "../types/task.types";
 import toast from "react-hot-toast";
 import TaskTodo from "../components/TaskTodo";
-import { useQueryFetchExsitingMemberOnTheWorkspace } from "../Api-Client/member";
 import { Member } from "../types/member.types";
 import { useState } from "react";
-import { useAuthStore } from "../store/auth.store";
 import { useMutation } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/workspaces_/$workspaceId/task/create")({
+  beforeLoad: async ({ context }) => {
+
+    if (context.auth.user === null && !context.auth.isAuthenticated) {
+      throw redirect({ to: '/login' });
+    }
+  },
   loader: async ({ params }) => {
     return {
       workspaceId: params.workspaceId,
@@ -42,12 +47,10 @@ function RouteComponent() {
   const { workspaceId } = useLoaderData({
     from: "/workspaces_/$workspaceId/task/create",
   });
-  const { data: existingMembers } = useQueryFetchExsitingMemberOnTheWorkspace(
-    `${workspaceId}`
-  );
+
   const nav = useNavigate({ from: '/workspaces/$workspaceId/task/create' })
 
-  const user = useAuthStore();
+
 
   const methods = useForm<CreateTaskFormData>({
     defaultValues: {
@@ -78,9 +81,7 @@ function RouteComponent() {
     control,
     keyName: "memberId",
     rules: {
-      // validate: (value) => {
-      //   return value.length > 0 || "At least one assignee is required";
-      // },
+
     },
   });
 
@@ -113,6 +114,7 @@ function RouteComponent() {
   });
 
   const onSubmit: SubmitHandler<CreateTaskFormData> = (data) => {
+
     if (assignedTo.length === 0) {
       setIsAssigned(true);
       return;
@@ -139,13 +141,13 @@ function RouteComponent() {
 
   return (
     <div className="py-8 pb-20">
-      <Button
+      <button
         onClick={() => window.history.back()}
-        className="flex items-center mb-6 ml-4 text-blue-400 hover:text-blue-500 transition-colors"
+        className="flex items-center mb-6 ml-4 text-blue-400 "
       >
         <ArrowLeft className="mr-2" />
         Back to Workspace
-      </Button>
+      </button>
 
       <FormProvider {...methods}>
         <form
@@ -214,33 +216,7 @@ function RouteComponent() {
                 </p>
               )}
             </div>
-            {/* *****************************   Select for Progress *****************************************
-            <div className="flex flex-col gap-4">
-              <Select
-                onValueChange={(
-                  value: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE"
-                ) => setValue("progress", value, { shouldValidate: true })}
-              >
-                <SelectTrigger className="w-[180px] outline-2 outline-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  <SelectValue placeholder="PROGRESS" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-700 font-semibold">
-                  <SelectItem value="IN_PROGRESS">IN_PROGRESS</SelectItem>
-                  <SelectItem value="PENDING">PENDING</SelectItem>
-                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                  <SelectItem value="OVERDUE">OVERDUE</SelectItem>
-                </SelectContent>
-              </Select>
-              <input
-                type="hidden"
-                {...register("progress", { required: "Progress is required" })}
-              />
-              {errors.progress && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.progress.message}
-                </p>
-              )}
-            </div> */}
+
           </div>
           {/* *********************************************** Task Todo ********************************************* */}
 
@@ -322,7 +298,7 @@ function RouteComponent() {
             setIsAssigned={setIsAssigned}
           />
 
-          <Button type="submit" className="py-2 my-4">
+          <Button type="submit" className="py-2 my-4 bg-indigo-500">
             Submit
           </Button>
         </form>

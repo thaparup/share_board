@@ -19,7 +19,7 @@ import { queryClient } from "../main";
 
 const WorkspaceModal = () => {
     const createWorkspaceMutation = useMutationCreateWorkspace();
-    const { register, handleSubmit, reset } = useForm<WorkspaceFormData>();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<WorkspaceFormData>();
     const [open, setOpen] = useState(false);
 
     const workspacesQuery = useQueryAllWorkspace();
@@ -50,30 +50,31 @@ const WorkspaceModal = () => {
             >
                 Create Workspace
             </DialogTrigger>
-            <DialogContent className="bg-black">
+            <DialogContent className="bg-black border-amber-500/50">
                 <DialogHeader className="py-8">
                     <DialogTitle className="font-semibold">
                         Build the workspace where ideas come alive...
                     </DialogTitle>
-                    <DialogDescription className="mt-2">
-                        <form onSubmit={handleSubmit(onClickMutate)}>
-                            <input
-                                type="text"
-                                placeholder="Give Your Workspace A Name"
-                                className="outline-none ring-1 ring-amber-600/80 rounded-xs p-2 w-full px placeholder:italic"
-                                {...register("name", { required: true })}
-                            />
-                            <div className="flex justify-center mt-4">
-                                <Button
-                                    type="submit"
-                                    className="px-8 text-md hover:cursor-pointer"
-                                    disabled={createWorkspaceMutation.isPending}
-                                >
-                                    {createWorkspaceMutation.isPending ? "Creating..." : "Create"}
-                                </Button>
-                            </div>
-                        </form>
-                    </DialogDescription>
+                    <form className="mt-2" onSubmit={handleSubmit(onClickMutate)}>
+                        <input
+                            type="text"
+                            placeholder="Give Your Workspace A Name"
+                            className="outline-none ring-1 ring-amber-600/80 rounded-xs p-2 w-full px placeholder:italic"
+                            {...register("name", { required: "Workspace name is required" })}
+                        />
+                        {errors.name && <p className="text-red-500 text-sm py-2">{errors.name.message}</p>}
+
+                        <div className="flex justify-center mt-4">
+                            <Button
+                                type="submit"
+                                className="px-8 text-md hover:cursor-pointer"
+                                disabled={createWorkspaceMutation.isPending}
+                            >
+                                {createWorkspaceMutation.isPending ? "Creating..." : "Create"}
+                            </Button>
+                        </div>
+                    </form>
+                    {/* </DialogDescription> */}
                 </DialogHeader>
             </DialogContent>
         </Dialog>

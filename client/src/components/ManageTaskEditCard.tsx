@@ -1,8 +1,15 @@
 import { format } from "date-fns";
-import React from "react";
+import React, { useState } from "react";
 import { Task } from "../types/task.types";
 import { Users, Calendar } from "lucide-react"; // ✅ Lucide icon: ;
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Button } from "./ui/button";
+import { useAuthStore } from "../store/auth.store";
+import Alert from "./Alert";
+import { deleteTask, } from "../Api-Client/task";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { queryClient } from "../main";
 
 
 export const priorityColors: Record<Task["priority"], string> = {
@@ -53,11 +60,36 @@ interface TaskCardProps {
 }
 
 const ManageTaskEditCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
+    const [deleteDialog, setDeleteDialog] = useState(false)
+    const user = useAuthStore()
     const daysRemaining = getDaysRemaining(task.dueDate);
     const isOverdue = daysRemaining === "Overdue";
     const taskId = task.id
+
+    const queryClient = useQueryClient();
+
+    const { mutate: deleteTaskMutation, isPending } = useMutation({
+
+        mutationFn: (taskId: string) => deleteTask(taskId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["taskWhereUserIsAdmin"] });
+            toast.success("Task deleted");
+            setDeleteDialog(false);
+        },
+        onError: (error) => {
+            console.error("Failed to delete task:", error);
+            toast.error("Failed to delete task");
+        },
+    });
+
+    const handleDeleteConfirm = (taskId: string) => {
+        if (taskId) {
+            deleteTaskMutation(taskId);
+        }
+    };
+
     return (
-        <Link to='/workspaces/$workspaceId/task/manage/$taskId' params={{ taskId, workspaceId }} className="mb-4 bg-white  rounded-lg shadow-md overflow-hidden flex">
+        <div className="mb-4 bg-white  rounded-lg shadow-md overflow-hidden flex">
             {/* <div className={`w-2 ${priorityColors[task.priority]}`}>{task.priority}</div> */}
             <div className={`w-2 bg-indigo-600`}></div>
 
@@ -88,17 +120,17 @@ const ManageTaskEditCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
                             </span>
                         )}
                     </div>
-
-                    {/* <div className="flex items-center gap-2 text-gray-600">
-                        <Users className="w-4 h-4" />
-                        <span>
-                            {task.totalMembers}{" "}
-                            {task.totalMembers === 1 ? "member" : "members"}
-                        </span>
-                    </div> */}
+                    {task.taskCreatorId === user.user!.id ? (
+                        <div className="flex flex-col gap-2 mt-2">
+                            <Link to='/workspaces/$workspaceId/task/manage/$taskId' params={{ taskId, workspaceId }} className="font-semibold text-md text-white bg-amber-500 py-2 text-center rounded-sm">
+                                Edit</Link>
+                            <Button onClick={() => setDeleteDialog(true)} className="bg-indigo-500" type="button">Delete</Button>
+                        </div>
+                    ) : null}
+                    <Alert open={deleteDialog} onOpenChange={setDeleteDialog} description="  This action cannot be undone. This will permanently delete your account and remove your task from our servers." title="Are you absolutely sure?" actionText="Confirm Delete" cancelText="Cancel" onConfirm={() => handleDeleteConfirm(task.id)} />
                 </div>
             </div>
-        </Link>
+        </div>
     );
 };
 

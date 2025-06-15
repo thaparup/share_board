@@ -67,7 +67,7 @@ const TaskTodo = ({ fields, append, remove, errors, register }: Props) => {
                 </p>
             )}
 
-            <Button onClick={() => append({ name: "", checked: false })} type="button" className="my-8 w-fit mx-auto px-8">
+            <Button onClick={() => append({ name: "", checked: false })} type="button" className="my-8 w-fit mx-auto px-8 bg-indigo-500">
                 Add Todo
             </Button>
 

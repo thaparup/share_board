@@ -17,7 +17,7 @@ const assignedUserArraySchemaItem = z.object({
   memberId: z.string(),
   memberName: z.string(),
   memberEmail: z.string(),
-  memberAvatar: z.string().optional(),
+  memberAvatarImage: z.string().optional(),
 });
 export const assignedUserArraySchema = z
   .array(assignedUserArraySchemaItem)

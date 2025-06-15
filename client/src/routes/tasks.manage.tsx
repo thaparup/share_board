@@ -10,7 +10,8 @@ export const Route = createFileRoute('/tasks/manage')({
 
 function RouteComponent() {
 
-  const { data } = useFetchTaskWhereUserIsAdmin()
+  const { data } = useFetchTaskWhereUserIsAdmin();
+
   const { user } = useAuthStore()
   return (
     <Body>
@@ -19,14 +20,18 @@ function RouteComponent() {
 
         {data?.data.taskWhereUserIsAdmin.map((item) =>
           <div className='my-4'>
-            <h1 className='font-medium'>{item.workspace}</h1>
+            <h1 className='font-semibold text-gray-300 text-xl'>{item.workspace}</h1>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-2'>
-              {item.tasks.map((task) => <ManageTaskEditCard task={task} workspaceId={task.workspaceId} key={task.id} />)}
+              {item.tasks.map((task) => {
+                if (task.taskCreatorId === user?.id) {
+                  return <ManageTaskEditCard task={task} workspaceId={task.workspaceId} key={task.id} />
+                }
+              })}
             </div>
           </div>
         )}
 
-        <h1>Other's workspace</h1>
+        <h1 className='font-semibold text-gray-300 text-xl'>Other's workspace</h1>
         {data?.data.taskWhereUserIsNotAdmin.map((item) =>
           <div className='my-4'>
             <h1 className='font-medium'>{item.workspace}</h1>
@@ -36,6 +41,7 @@ function RouteComponent() {
           </div>
         )}
       </div>
+
     </Body>
   )
 }

@@ -38,7 +38,7 @@ const Navbar = () => {
                         <Link to='/signup' className='font-bold'>Signup</Link>
                     </div>
                 ) : (
-                    <Menubar className="border-none shadow-none bg-transparent p-0">
+                    <Menubar className="border-none shadow-none p-0 ">
                         <MenubarMenu>
                             <MenubarTrigger className="p-0 hover:bg-transparent data-[state=open]:bg-transparent focus:bg-transparent">
                                 <Avatar className="cursor-pointer border-2 border-amber-400/59">
@@ -49,7 +49,7 @@ const Navbar = () => {
                                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
                                 </Avatar>
                             </MenubarTrigger>
-                            <MenubarContent align="end" className="w-56">
+                            <MenubarContent align="end" className="w-56 bg-gray-900">
                                 <div className="p-2">
                                     <p className="font-medium">{user?.name || "User"}</p>
                                     <p className="text-xs text-muted-foreground truncate">{user?.email || ""}</p>

@@ -80,7 +80,6 @@ export const getAllWorkspace = async (req: Request, res: Response) => {
     const memberWorkspaceIds = usersAllWorkspace
       .filter((w) => w.role !== "ADMIN")
       .map((w) => w.workspaceId);
-
     const adminWorkspaces = await prisma.workspace.findMany({
       where: { id: { in: adminWorkspaceIds } },
     });
@@ -186,6 +185,16 @@ export const getWorkspaceById = async (req: Request, res: Response) => {
         workspaceId: workspaceId,
       },
     });
+    const numberOfTodos = await prisma.taskTodoCheckList.findMany({
+      where: { taskId: { in: tasks.map((task) => task.id) } },
+    });
+    console.log(numberOfTodos);
+    const todosDetail = numberOfTodos.reduce((acc, curr) => {
+      if (curr.taskId !== null) {
+        acc[curr.taskId] = (acc[curr.taskId] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
 
     const assignedUsers = await Promise.all(
       tasks.map(async ({ id }) => {
@@ -204,9 +213,10 @@ export const getWorkspaceById = async (req: Request, res: Response) => {
       return matchedUsers.map((user) => ({
         ...task,
         totalMembers: user.count,
+        totalTodos: todosDetail[task.id],
       }));
     });
-
+    console.log(tasksInDetail);
     const formattedMembers = members.map((member) => ({
       id: member.id,
       memberId: member.memberId,

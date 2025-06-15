@@ -5,15 +5,15 @@ import { createTaskSchema } from "../schema/task.schema";
 const prisma = new PrismaClient();
 export async function getAllTasks(req: Request, res: Response) {
   try {
-    // const workspaceId = req.params.id;
-    // const tasksOfAWorkspace = await prisma.task.findMany({
-    //   where: { workspaceId: workspaceId },
-    // });
+    const workspaceId = req.params.id;
+    const tasksOfAWorkspace = await prisma.task.findMany({
+      where: { workspaceId: workspaceId },
+    });
 
-    // res.status(200).json({
-    //   message: "All tasks for the workspace",
-    //   data: tasksOfAWorkspace,
-    // });
+    res.status(200).json({
+      message: "All tasks for the workspace",
+      data: tasksOfAWorkspace,
+    });
     return;
   } catch (error) {}
 }
@@ -98,7 +98,7 @@ export async function createTask(req: Request, res: Response) {
             assignedUserId: item.memberId,
             assignedUserName: item.memberName,
             assignedUserEmail: item.memberEmail,
-            assignedUserAvatar: item.memberAvatar || "",
+            assignedUserAvatar: item.memberAvatarImage || "",
           })),
         });
       }
@@ -154,6 +154,7 @@ export async function updateTask(req: Request, res: Response) {
       res.status(400).json({ message: "No task found for the workspace" });
       return;
     }
+    console.log(req.body);
     const parsed = createTaskSchema.safeParse(req.body);
 
     if (!parsed.success) {
@@ -216,7 +217,7 @@ export async function updateTask(req: Request, res: Response) {
             assignedUserId: item.memberId!,
             assignedUserName: item.memberName!,
             assignedUserEmail: item.memberEmail!,
-            assignedUserAvatar: item.memberAvatar!,
+            assignedUserAvatar: item.memberAvatarImage!,
           })),
         });
       }
@@ -300,6 +301,7 @@ export async function getTaskById(req: Request, res: Response) {
         taskTodo: tastTodo,
       },
     });
+    console.log(taskMember);
     return;
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
@@ -400,5 +402,35 @@ export async function getAllAssignedTask(req: Request, res: Response) {
     console.error(error);
     res.status(500).json({ error: "Failed to retrieve assigned tasks" });
     return;
+  }
+}
+
+export async function deleteTask(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.id;
+    const taskId = req.params.taskId;
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    if (!taskId) {
+      res.status(400).json({ message: "No task id found" });
+      return;
+    }
+
+    const task = await prisma.task.findUnique({ where: { id: taskId } });
+    if (!task) {
+      res.status(400).json({ message: "No task found" });
+      return;
+    }
+
+    await prisma.taskAssignment.deleteMany({ where: { taskId: task.id } });
+    await prisma.task.delete({ where: { id: task.id } });
+    await prisma.taskTodoCheckList.deleteMany({ where: { taskId: task.id } });
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }

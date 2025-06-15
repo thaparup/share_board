@@ -6,6 +6,7 @@ export interface Task {
   totalMembers: number;
   completed: boolean;
   workspaceId: string;
+  totalTodos?: number;
   workspaceName: string;
   taskCreatorId: string;
   taskCreatorName: string;
@@ -36,7 +37,10 @@ export type GetTaskByIdResponse = {
     taskTodo: TaskTodo[];
   };
 };
-
+export type DeleteTaskResponse = {
+  message: string;
+  data: null;
+};
 type Checklist = {
   name: string;
   checked: boolean;
@@ -46,7 +50,7 @@ type AssignedTo = {
   memberId: string;
   memberName: string;
   memberEmail: string;
-  memberAvatar?: string;
+  memberAvatarImage?: string;
 };
 export type CreateTaskFormData = {
   id: string;
@@ -63,22 +67,22 @@ export type taskGroup = {
   workspaceId: string;
   tasks: Task[];
 };
-export type Task = {
-  id: string;
-  name: string;
-  description: string;
-  priority: "LOW" | "MEDIUM" | "HIGH";
-  completed: boolean;
-  workspaceId: string;
-  workspaceName: string;
-  taskCreatorId: string;
-  taskCreatorName: string;
-  taskCreatorEmail: string;
-  dueDate: string;
-  startDate: string;
-  createdAt: string;
-  updatedAt: string;
-};
+// export type Task = {
+//   id: string;
+//   name: string;
+//   description: string;
+//   priority: "LOW" | "MEDIUM" | "HIGH";
+//   completed: boolean;
+//   workspaceId: string;
+//   workspaceName: string;
+//   taskCreatorId: string;
+//   taskCreatorName: string;
+//   taskCreatorEmail: string;
+//   dueDate: string;
+//   startDate: string;
+//   createdAt: string;
+//   updatedAt: string;
+// };
 
 export type WorkspaceWithTasks = {
   workspace: string;

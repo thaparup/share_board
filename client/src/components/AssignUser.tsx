@@ -20,7 +20,7 @@ import { Member } from '../types/member.types';
 const AssignUser = ({ fields, append, remove, errors, workspaceId, isAssigned, setIsAssigned }: Props) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const { data: users, isLoading } = useQueryFetchExsitingMemberOnTheWorkspace(`${workspaceId}`);
-
+    console.log('exosting user', users)
 
     const filteredUsers =
         (users?.data as Member[])?.filter((user) => {

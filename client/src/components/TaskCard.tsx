@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import React from "react";
 import { Task } from "../types/task.types";
-import { Users, Calendar } from "lucide-react"; // ✅ Lucide icon: ;
+import { Users, Calendar, ListTodo } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 
@@ -77,8 +77,16 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
                     <div className="flex items-center gap-2 text-gray-600">
                         <Users className="w-4 h-4" />
                         <span>
+                            {task.totalTodos}{" "}
+                            {task.totalMembers === 1 ? "Assigned member" : "Assigned members"}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-gray-600">
+                        <ListTodo className="w-4 h-4" />
+                        <span>
                             {task.totalMembers}{" "}
-                            {task.totalMembers === 1 ? "member" : "members"}
+                            {task.totalMembers === 1 ? "Todo" : "Todos"}
                         </span>
                     </div>
                 </div>
