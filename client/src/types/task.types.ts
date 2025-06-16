@@ -11,6 +11,7 @@ export interface Task {
   taskCreatorId: string;
   taskCreatorName: string;
   taskCreatorEmail: string;
+  startDate: string;
   dueDate: string;
   createdAt: string;
   updatedAt: string;
@@ -67,22 +68,10 @@ export type taskGroup = {
   workspaceId: string;
   tasks: Task[];
 };
-// export type Task = {
-//   id: string;
-//   name: string;
-//   description: string;
-//   priority: "LOW" | "MEDIUM" | "HIGH";
-//   completed: boolean;
-//   workspaceId: string;
-//   workspaceName: string;
-//   taskCreatorId: string;
-//   taskCreatorName: string;
-//   taskCreatorEmail: string;
-//   dueDate: string;
-//   startDate: string;
-//   createdAt: string;
-//   updatedAt: string;
-// };
+
+export type UpdateTaskTodoForm = {
+  todos: TaskTodo[];
+};
 
 export type WorkspaceWithTasks = {
   workspace: string;
@@ -118,7 +107,8 @@ export type TasksWhereUserIsAdmin = {
 
 export type AssignedTasksResponse = {
   message: string;
-  data: {
-    tasks: [];
-  };
+  data: Array<{
+    name: string;
+    tasks: Task[];
+  }>;
 };

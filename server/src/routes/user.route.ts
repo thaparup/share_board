@@ -1,13 +1,11 @@
 import { Request, Router } from "express";
 import {
   createUser,
-  fetchCurrentUser,
   getAllUsers,
   loginUser,
   logoutUser,
   searchUsers,
   validateToken,
-  valideateToken,
 } from "../controllers/user.controller";
 import { verifyJwt } from "../middleware/auth.middleware";
 import multer from "multer";

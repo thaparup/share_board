@@ -16,7 +16,7 @@ function RouteComponent() {
   return (
     <Body>
       <div className="container mx-auto px-4 py-8">
-        <h1 className='text-2xl font-medium'>Task Management</h1>
+        <h1 className='text-2xl font-medium text-center mb-12'>Task Management</h1>
 
         {data?.data.taskWhereUserIsAdmin.map((item) =>
           <div className='my-4'>

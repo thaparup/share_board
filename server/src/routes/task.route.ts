@@ -8,11 +8,13 @@ import {
   getAllTaskWhereTheUserIsAdmin,
   getTaskById,
   updateTask,
+  updateTaskTodo,
 } from "../controllers/task.controller";
 
 const router = Router();
 
-router.delete("/:taskId", verifyJwt, deleteTask); // ✅ Put this first
+router.patch("/todo/", verifyJwt, updateTaskTodo);
+router.delete("/:taskId", verifyJwt, deleteTask);
 router.get("/assigned", verifyJwt, getAllAssignedTask);
 router.get("", verifyJwt, getAllTaskWhereTheUserIsAdmin);
 router.post("/:workspaceId", verifyJwt, createTask);

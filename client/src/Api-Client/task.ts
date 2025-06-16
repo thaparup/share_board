@@ -5,6 +5,7 @@ import {
   DeleteTaskResponse,
   GetTaskByIdResponse,
   TasksWhereUserIsAdmin,
+  UpdateTaskTodoForm,
 } from "../types/task.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -135,3 +136,15 @@ export const useFetchAssignedTasks = () =>
     },
     enabled: true,
   });
+
+export const updateTaskTodo = async (formData: UpdateTaskTodoForm) => {
+  try {
+    const response = await axios.patch(`/api/task/todo/`, formData, {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new Error("couldn't create a workspace");
+  }
+};

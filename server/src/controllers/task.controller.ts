@@ -99,6 +99,7 @@ export async function createTask(req: Request, res: Response) {
             assignedUserName: item.memberName,
             assignedUserEmail: item.memberEmail,
             assignedUserAvatar: item.memberAvatarImage || "",
+            workspaceId: findWorkspace.id,
           })),
         });
       }
@@ -218,6 +219,7 @@ export async function updateTask(req: Request, res: Response) {
             assignedUserName: item.memberName!,
             assignedUserEmail: item.memberEmail!,
             assignedUserAvatar: item.memberAvatarImage!,
+            workspaceId: workspaceId,
           })),
         });
       }
@@ -364,6 +366,46 @@ export async function getAllTaskWhereTheUserIsAdmin(
   }
 }
 
+export async function updateTaskTodo(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const { todos } = req.body;
+
+    if (!Array.isArray(todos)) {
+      res.status(400).json({ error: "Invalid todos format" });
+      return;
+    }
+
+    const updatePromises = todos.map((todo) =>
+      prisma.taskTodoCheckList
+        .update({
+          where: { id: todo.id },
+          data: { checked: todo.checked },
+        })
+        .catch((err) => {
+          console.error(`Error updating todo ${todo.id}:`, err.message);
+          return null;
+        })
+    );
+
+    const result = await Promise.all(updatePromises);
+    res.status(200).json({
+      message: "Todos updated successfully",
+    });
+    return;
+  } catch (error: any) {
+    console.error("Server error:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+    return;
+  }
+}
+
 export async function getAllAssignedTask(req: Request, res: Response) {
   try {
     const userId = req.user?.id;
@@ -373,33 +415,45 @@ export async function getAllAssignedTask(req: Request, res: Response) {
       return;
     }
 
-    const allTasksId = await prisma.taskAssignment.findMany({
-      where: {
-        assignedUserId: userId,
-      },
-      select: {
-        taskId: true,
-      },
+    const taskAssignments = await prisma.taskAssignment.findMany({
+      where: { assignedUserId: userId },
+      select: { taskId: true },
     });
 
-    const taskIds = allTasksId.map((item) => item.taskId);
-    const allTasks = await prisma.task.findMany({
-      where: {
-        id: {
-          in: taskIds,
-        },
-      },
+    const taskIds = taskAssignments.map((t) => t.taskId);
+
+    if (taskIds.length === 0) {
+      res.json({
+        message: "No assigned tasks",
+        data: [],
+      });
+      return;
+    }
+
+    const assignedTasks = await prisma.task.findMany({
+      where: { id: { in: taskIds } },
     });
+
+    const groupedTasks: { name: string; tasks: typeof assignedTasks }[] = [];
+
+    for (const task of assignedTasks) {
+      const workspaceName = task.name || "Unknown Workspace";
+
+      let group = groupedTasks.find((item) => item.name === workspaceName);
+      if (!group) {
+        group = { name: workspaceName, tasks: [] };
+        groupedTasks.push(group);
+      }
+
+      group.tasks.push(task);
+    }
     res.json({
-      message: "tasks where the user is the admin",
-      data: {
-        tasks: allTasks,
-      },
+      message: "Assigned tasks grouped by workspace",
+      data: groupedTasks,
     });
-
     return;
   } catch (error) {
-    console.error(error);
+    console.error("Error in getAllAssignedTask:", error);
     res.status(500).json({ error: "Failed to retrieve assigned tasks" });
     return;
   }

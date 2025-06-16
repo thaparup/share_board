@@ -51,6 +51,7 @@ model TaskAssignment {
   assignedUserName   String
   assignedUserEmail  String
   assignedUserAvatar String
+  workspaceId        String   @default("")
   assignedAt         DateTime @default(now())
 }
 
