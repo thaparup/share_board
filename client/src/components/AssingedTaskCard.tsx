@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import React from "react";
 import { Task } from "../types/task.types";
-import { Users, Calendar } from "lucide-react"; // ✅ Lucide icon: ;
+import { Calendar } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 

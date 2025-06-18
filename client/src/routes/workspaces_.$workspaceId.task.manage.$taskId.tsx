@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { updateTask, useFetchTaskById } from '../Api-Client/task';
 import {
   Select,
@@ -27,6 +27,11 @@ import toast from 'react-hot-toast';
 export const Route = createFileRoute(
   '/workspaces_/$workspaceId/task/manage/$taskId',
 )({
+  beforeLoad: async ({ context }) => {
+    if (context.auth.user === null && !context.auth.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: RouteComponent,
   loader: async ({ params }) => {
     return {

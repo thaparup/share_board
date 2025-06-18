@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import Body from "../components/Body";
 import { updateTaskTodo, useFetchTaskById } from "../Api-Client/task";
 import { Task, TaskTodo } from "../types/task.types";
@@ -16,7 +16,13 @@ type FormValues = {
 export const Route = createFileRoute(
   "/assigned/workspace_/$workspaceId/task/$taskId"
 )({
+  beforeLoad: async ({ context }) => {
+    if (context.auth.user === null && !context.auth.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+  },
   loader: async ({ params }) => {
+
     return {
       taskId: params.taskId,
       workspaceId: params.workspaceId,

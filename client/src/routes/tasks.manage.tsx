@@ -1,10 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import Body from '../components/Body'
 import { useFetchTaskWhereUserIsAdmin } from '../Api-Client/task'
 import ManageTaskEditCard from '../components/ManageTaskEditCard'
 import { useAuthStore } from '../store/auth.store'
 
 export const Route = createFileRoute('/tasks/manage')({
+  beforeLoad: async ({ context }) => {
+    if (context.auth.user === null && !context.auth.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: RouteComponent,
 })
 

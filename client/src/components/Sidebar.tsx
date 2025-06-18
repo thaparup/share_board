@@ -13,15 +13,17 @@ import toast from 'react-hot-toast'
 
 const Sidebar = () => {
 
-    const { user, logout } = useAuthStore()
+    const user = useAuthStore((state) => state.user)
+    const logout = useAuthStore((state) => state.logout)
+
     const logoutMutation = useMutationLogout()
-    const navigation = useNavigate()
+    const navigation = useNavigate();
+
     const menuItems = [
         { name: 'Dashboard', icon: <LayoutDashboard size={18} />, to: '/dashboard' },
         { name: 'Workspaces', icon: <Folder size={18} />, to: '/workspaces' },
         { name: 'Manage Tasks', icon: <CheckSquare size={18} />, to: '/tasks/manage' },
         { name: 'Task Assigned', icon: <Tent size={18} />, to: '/assigned/tasks' },
-        { name: 'Logout', icon: <LogOut size={18} />, to: '/logout' },
     ]
     return (
         <aside className="w-64  shadow-lg px-6 flex flex-col items-center border-[1px] border-slate-700/80 rounded-t-md">
@@ -41,7 +43,16 @@ const Sidebar = () => {
                         <li key={name}>
                             <Link
                                 to={to}
+                                onClick={() => {
+                                    logoutMutation.mutate(undefined, {
+                                        onSuccess() {
+                                            logout()
+                                            toast.success("Logged out")
+                                            navigation({ to: "/login" })
 
+                                        },
+                                    });
+                                }}
                                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-amber-100 text-gray-300/80 hover:text-amber-600 transition-colors font-medium"
                             >
                                 <span className="text-amber-600">{icon}</span>
@@ -49,6 +60,28 @@ const Sidebar = () => {
                             </Link>
                         </li>
                     ))}
+
+                    <li >
+                        <Link
+                            to='/'
+                            onClick={() => {
+                                logoutMutation.mutate(undefined, {
+                                    onSuccess() {
+                                        toast.success("Log out");
+                                        logout();
+                                        navigation({ to: "/login" });
+
+
+                                        // window.location.href = "/login" // Forces full reload
+                                    },
+                                });
+                            }}
+                            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-amber-100 text-gray-300/80 hover:text-amber-600 transition-colors font-medium"
+                        >
+                            <span className="text-amber-600"><LogOut /></span>
+                            Logout
+                        </Link>
+                    </li>
                 </ul>
             </nav>
         </aside>

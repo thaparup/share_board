@@ -1,12 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import Body from "../components/Body";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import {
-    getDashboardData,
     useGetDashboardStats,
 } from "../Api-Client/dashboard";
-import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle, Clock, Folder, Users } from "lucide-react";
 import TaskStatsCard from "../components/TaskStatsCard";
 
@@ -18,6 +14,7 @@ export const Route = createFileRoute("/dashboard")({
 
         //     })
         // }
+
         if (context.auth.user === null && !context.auth.isAuthenticated) {
             // Still unauthenticated after fetchUser: redirect
             throw redirect({ to: "/login" });

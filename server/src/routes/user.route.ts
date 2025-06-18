@@ -1,4 +1,4 @@
-import { Request, Router } from "express";
+import { Router } from "express";
 import {
   createUser,
   getAllUsers,
@@ -8,8 +8,7 @@ import {
   validateToken,
 } from "../controllers/user.controller";
 import { verifyJwt } from "../middleware/auth.middleware";
-import multer from "multer";
-import { upload, uploadFile } from "../middleware/image.middleware";
+import { uploadFile } from "../middleware/image.middleware";
 
 const router = Router();
 const allowedExtensions = ["jpg", "jpeg", "png", "webp", "avif"];

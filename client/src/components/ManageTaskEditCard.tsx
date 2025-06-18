@@ -1,15 +1,14 @@
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { Task } from "../types/task.types";
-import { Users, Calendar } from "lucide-react"; // ✅ Lucide icon: ;
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Calendar } from "lucide-react";
+import { Link, } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 import { useAuthStore } from "../store/auth.store";
 import Alert from "./Alert";
 import { deleteTask, } from "../Api-Client/task";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { queryClient } from "../main";
 
 
 export const priorityColors: Record<Task["priority"], string> = {

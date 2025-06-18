@@ -1,17 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import Body from '../components/Body'
 import { useFetchTaskWhereUserIsAdmin } from '../Api-Client/task'
-import TaskCard from '../components/TaskCard'
-import { taskGroup } from '../types/task.types'
+
 
 export const Route = createFileRoute('/manage/task')({
+  beforeLoad: async ({ context }) => {
+    if (context.auth.user === null && !context.auth.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const { data: tasks, isLoading } = useFetchTaskWhereUserIsAdmin()
+  console.log('sdfsdfsd', tasks)
   return <Body>
-    <h1 className="text-2xl font-semibold text-white/85 py-4">Manage Your Tasks</h1>
+    {/* <h1 className="text-2xl font-semibold text-white/85 py-4">Manage Your Tasks</h1>
     {isLoading ? (
       <h1>Loading...</h1>
     ) : (
@@ -30,6 +35,7 @@ function RouteComponent() {
         ))}
       </div>
 
-    )}
+    )} */}
+    <h1></h1>
   </Body>
 }

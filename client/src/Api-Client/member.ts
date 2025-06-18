@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Member } from "../types/member.types";
 import { ExistingMemberResponse } from "../types/workspace.types";
 import { User } from "../types/auth.types";
 import { useQueryFetchWorkspaceById } from "./workspace";

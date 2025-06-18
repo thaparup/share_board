@@ -1,5 +1,4 @@
-import React from 'react'
-import { FieldError, useForm } from 'react-hook-form';
+
 import { FieldArrayWithId } from 'react-hook-form';
 import { CreateTaskFormData } from '../types/task.types';
 import { Button } from './ui/button';

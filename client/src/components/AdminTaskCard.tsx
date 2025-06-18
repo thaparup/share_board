@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import React from "react";
 import { Task } from "../types/task.types";
-import { Users, Calendar } from "lucide-react"; // ✅ Lucide icon: ;
+import { Users, Calendar } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 
@@ -9,12 +9,6 @@ export const priorityColors: Record<Task["priority"], string> = {
     HIGH: "bg-red-500",
     MEDIUM: "bg-yellow-500",
     LOW: "bg-blue-500",
-};
-
-export const progressBadges: Record<Task["progress"], string> = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    IN_PROGRESS: "bg-blue-100 text-blue-800",
-    COMPLETED: "bg-green-100 text-green-800",
 };
 
 export const formatDate = (dateString: string): string => {
@@ -54,11 +48,7 @@ const AdminTaskCard: React.FC<props> = ({ task, }) => {
             <div className="flex-1 p-4">
                 <div className="flex justify-between items-start">
                     <h3 className="text-lg font-semibold text-gray-800">{task.name}</h3>
-                    <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${progressBadges[task.progress]}`}
-                    >
-                        {task.progress}
-                    </span>
+
                 </div>
 
                 <p className="text-gray-600 mt-2 text-sm">{task.description}</p>

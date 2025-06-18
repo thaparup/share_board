@@ -11,14 +11,14 @@ interface MyRouterContext {
 }
 export const Route = createRootRouteWithContext<MyRouterContext>()({
     component: () => (
-        <div className="h-screen flex flex-col">
+        <div className="h-screen">
 
-            <header className="h-[6vh] shrink-0 ">
+            <header className="h-[8vh]">
                 <Navbar />
             </header>
 
 
-            <main className="h-[94vh] ">
+            <main className="h-[92vh]">
                 <Outlet />
             </main>
 

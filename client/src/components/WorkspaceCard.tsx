@@ -24,7 +24,6 @@ const WorkspaceCard = ({
     const progress = totalTasks === 0 ? 0 : Math.round((taskCompleted / totalTasks) * 100);
     const noTasks = totalTasks === 0;
 
-    // Determine status color based on progress
     const getStatusColor = () => {
         if (noTasks) return "bg-orange-500";
         if (progress < 30) return "bg-red-500";

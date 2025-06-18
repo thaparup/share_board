@@ -5,10 +5,8 @@ import bcrypt from "bcrypt";
 import { SignJWT } from "jose";
 import { serialize } from "cookie";
 import { ALG, COOKIE, COOKIE_NAME, KEY } from "../utils/auth";
-import fs from "node:fs"; // Import the fs module
-
+import fs from "node:fs";
 import { v2 as cloudinary } from "cloudinary";
-import { cloudinaryConfig } from "../../cloudinary.config";
 const prisma = new PrismaClient();
 
 export async function createUser(req: Request, res: Response) {
@@ -186,9 +184,10 @@ export async function searchUsers(req: Request, res: Response) {
     const { query } = req.query;
 
     if (!query || typeof query !== "string") {
-      return res
+      res
         .status(400)
         .json({ message: "Search query is required and must be a string." });
+      return;
     }
 
     const users = await prisma.user.findMany({
@@ -224,5 +223,6 @@ export async function searchUsers(req: Request, res: Response) {
   } catch (error) {
     console.error("Error searching users:", error);
     res.status(500).json({ message: "Internal server error" });
+    return;
   }
 }

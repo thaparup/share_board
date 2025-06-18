@@ -11,7 +11,6 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TryImport } from './routes/try'
 import { Route as SignupImport } from './routes/signup'
 import { Route as ProductImport } from './routes/product'
 import { Route as LoginImport } from './routes/login'
@@ -30,12 +29,6 @@ import { Route as WorkspacesWorkspaceIdTaskManageTaskIdImport } from './routes/w
 import { Route as AssignedWorkspaceWorkspaceIdTaskTaskIdImport } from './routes/assigned.workspace_.$workspaceId.task.$taskId'
 
 // Create/Update Routes
-
-const TryRoute = TryImport.update({
-  id: '/try',
-  path: '/try',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const SignupRoute = SignupImport.update({
   id: '/signup',
@@ -183,13 +176,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
-    '/try': {
-      id: '/try'
-      path: '/try'
-      fullPath: '/try'
-      preLoaderRoute: typeof TryImport
-      parentRoute: typeof rootRoute
-    }
     '/manage/task': {
       id: '/manage/task'
       path: '/manage/task'
@@ -284,7 +270,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
-  '/try': typeof TryRoute
   '/manage/task': typeof ManageTaskRouteWithChildren
   '/tasks/manage': typeof TasksManageRoute
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
@@ -304,7 +289,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
-  '/try': typeof TryRoute
   '/manage/task': typeof ManageTaskRouteWithChildren
   '/tasks/manage': typeof TasksManageRoute
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
@@ -325,7 +309,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
-  '/try': typeof TryRoute
   '/manage/task': typeof ManageTaskRouteWithChildren
   '/tasks/manage': typeof TasksManageRoute
   '/workspaces/$workspaceId': typeof WorkspacesWorkspaceIdRoute
@@ -347,7 +330,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
-    | '/try'
     | '/manage/task'
     | '/tasks/manage'
     | '/workspaces/$workspaceId'
@@ -366,7 +348,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
-    | '/try'
     | '/manage/task'
     | '/tasks/manage'
     | '/workspaces/$workspaceId'
@@ -385,7 +366,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
-    | '/try'
     | '/manage/task'
     | '/tasks/manage'
     | '/workspaces/$workspaceId'
@@ -406,7 +386,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ProductRoute: typeof ProductRoute
   SignupRoute: typeof SignupRoute
-  TryRoute: typeof TryRoute
   ManageTaskRoute: typeof ManageTaskRouteWithChildren
   TasksManageRoute: typeof TasksManageRoute
   WorkspacesWorkspaceIdRoute: typeof WorkspacesWorkspaceIdRoute
@@ -425,7 +404,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ProductRoute: ProductRoute,
   SignupRoute: SignupRoute,
-  TryRoute: TryRoute,
   ManageTaskRoute: ManageTaskRouteWithChildren,
   TasksManageRoute: TasksManageRoute,
   WorkspacesWorkspaceIdRoute: WorkspacesWorkspaceIdRoute,
@@ -456,7 +434,6 @@ export const routeTree = rootRoute
         "/login",
         "/product",
         "/signup",
-        "/try",
         "/manage/task",
         "/tasks/manage",
         "/workspaces/$workspaceId",
@@ -485,9 +462,6 @@ export const routeTree = rootRoute
     },
     "/signup": {
       "filePath": "signup.tsx"
-    },
-    "/try": {
-      "filePath": "try.tsx"
     },
     "/manage/task": {
       "filePath": "manage.task.tsx",

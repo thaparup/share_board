@@ -1,17 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { CheckCircle, Users, BarChart3, Clock, Zap, } from 'lucide-react';
+import { createFileRoute } from "@tanstack/react-router";
+import { CheckCircle, Users, BarChart3, Clock, Zap } from "lucide-react";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
     component: Index,
-})
+});
 
 function Index() {
-
-
     return (
         <div className="">
-
-
             {/* Hero Section */}
 
             <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black text-white">
@@ -26,10 +22,10 @@ function Index() {
                             <span className="text-white">Empower Your Team</span>
                         </h1>
                         <p className="text-xl sm:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-                            Transform chaos into clarity with our intuitive task management platform.
-                            Collaborate seamlessly, track progress effortlessly, and achieve more together.
+                            Transform chaos into clarity with our intuitive task management
+                            platform. Collaborate seamlessly, track progress effortlessly, and
+                            achieve more together.
                         </p>
-
                     </div>
 
                     {/* Hero Visual */}
@@ -44,12 +40,20 @@ function Index() {
                                     </h3>
                                     <div className="space-y-3">
                                         <div className="bg-gray-700 p-3 rounded-lg shadow-sm border-l-4 border-yellow-400">
-                                            <p className="text-sm font-medium text-white">Design new landing page</p>
-                                            <p className="text-xs text-gray-400 mt-1">Due: Tomorrow</p>
+                                            <p className="text-sm font-medium text-white">
+                                                Design new landing page
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-1">
+                                                Due: Tomorrow
+                                            </p>
                                         </div>
                                         <div className="bg-gray-700 p-3 rounded-lg shadow-sm border-l-4 border-red-500">
-                                            <p className="text-sm font-medium text-white">Review user feedback</p>
-                                            <p className="text-xs text-gray-400 mt-1">High priority</p>
+                                            <p className="text-sm font-medium text-white">
+                                                Review user feedback
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-1">
+                                                High priority
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -62,7 +66,9 @@ function Index() {
                                     </h3>
                                     <div className="space-y-3">
                                         <div className="bg-gray-700 p-3 rounded-lg shadow-sm border-l-4 border-blue-400">
-                                            <p className="text-sm font-medium text-white">Mobile app development</p>
+                                            <p className="text-sm font-medium text-white">
+                                                Mobile app development
+                                            </p>
                                             <div className="flex items-center mt-2">
                                                 <div className="w-full bg-gray-600 rounded-full h-2">
                                                     <div className="bg-blue-400 h-2 rounded-full w-3/4"></div>
@@ -81,12 +87,20 @@ function Index() {
                                     </h3>
                                     <div className="space-y-3">
                                         <div className="bg-gray-700 p-3 rounded-lg shadow-sm border-l-4 border-green-400">
-                                            <p className="text-sm font-medium text-white">User research completed</p>
-                                            <p className="text-xs text-gray-400 mt-1">Completed today</p>
+                                            <p className="text-sm font-medium text-white">
+                                                User research completed
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-1">
+                                                Completed today
+                                            </p>
                                         </div>
                                         <div className="bg-gray-700 p-3 rounded-lg shadow-sm border-l-4 border-green-400">
-                                            <p className="text-sm font-medium text-white">Brand guidelines</p>
-                                            <p className="text-xs text-gray-400 mt-1">Completed yesterday</p>
+                                            <p className="text-sm font-medium text-white">
+                                                Brand guidelines
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-1">
+                                                Completed yesterday
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -101,15 +115,22 @@ function Index() {
             </section>
 
             {/* Features Section - Dark Theme */}
-            <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-black text-white">
+            <section
+                id="features"
+                className="py-20 px-4 sm:px-6 lg:px-8 bg-black text-white"
+            >
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
                             Everything You Need to
-                            <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"> Succeed</span>
+                            <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                                {" "}
+                                Succeed
+                            </span>
                         </h2>
                         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                            Powerful features designed to streamline your workflow and boost team productivity
+                            Powerful features designed to streamline your workflow and boost
+                            team productivity
                         </p>
                     </div>
 
@@ -118,19 +139,21 @@ function Index() {
                             {
                                 icon: <Users className="w-8 h-8 text-blue-400" />,
                                 title: "Team Collaboration",
-                                description: "Work together seamlessly with real-time updates, comments, and file sharing across all your projects."
+                                description:
+                                    "Work together seamlessly with real-time updates, comments, and file sharing across all your projects.",
                             },
                             {
                                 icon: <BarChart3 className="w-8 h-8 text-green-400" />,
                                 title: "Progress Tracking",
-                                description: "Visualize your progress with interactive charts, reports, and analytics to keep projects on track."
+                                description:
+                                    "Visualize your progress with interactive charts, reports, and analytics to keep projects on track.",
                             },
                             {
                                 icon: <Clock className="w-8 h-8 text-purple-400" />,
                                 title: "Time Management",
-                                description: "Set deadlines, track time, and get automated reminders to ensure nothing falls through the cracks."
+                                description:
+                                    "Set deadlines, track time, and get automated reminders to ensure nothing falls through the cracks.",
                             },
-
                         ].map((feature, index) => (
                             <div
                                 key={index}
@@ -139,8 +162,12 @@ function Index() {
                                 <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                                <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                                <h3 className="text-xl font-semibold text-white mb-3">
+                                    {feature.title}
+                                </h3>
+                                <p className="text-gray-400 leading-relaxed">
+                                    {feature.description}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -158,7 +185,8 @@ function Index() {
                                 <span className="text-xl font-bold">ShareBoard</span>
                             </div>
                             <p className="text-gray-400 mb-6 max-w-md">
-                                Empowering teams worldwide to achieve more through better organization and collaboration.
+                                Empowering teams worldwide to achieve more through better
+                                organization and collaboration.
                             </p>
                             <div className="flex space-x-4">
                                 <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer">
@@ -176,20 +204,52 @@ function Index() {
                         <div>
                             <h3 className="font-semibold mb-4">Product</h3>
                             <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Tasks</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Workspaces</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Team</a></li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        Features
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        Tasks
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        Workspaces
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        Team
+                                    </a>
+                                </li>
                             </ul>
                         </div>
 
                         <div>
                             <h3 className="font-semibold mb-4">Support</h3>
                             <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">API Docs</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        Help Center
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        Contact Us
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        API Docs
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="hover:text-white transition-colors">
+                                        Status
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -199,12 +259,22 @@ function Index() {
                             © 2025 ShareBoard. All rights reserved.
                         </p>
                         <div className="flex space-x-6 mt-4 sm:mt-0">
-                            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
-                            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
+                            <a
+                                href="#"
+                                className="text-gray-400 hover:text-white text-sm transition-colors"
+                            >
+                                Privacy Policy
+                            </a>
+                            <a
+                                href="#"
+                                className="text-gray-400 hover:text-white text-sm transition-colors"
+                            >
+                                Terms of Service
+                            </a>
                         </div>
                     </div>
                 </div>
             </footer>
         </div>
-    )
+    );
 }

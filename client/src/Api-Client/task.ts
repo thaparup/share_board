@@ -7,8 +7,7 @@ import {
   TasksWhereUserIsAdmin,
   UpdateTaskTodoForm,
 } from "../types/task.types";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 
 const fetchTaskId = async (
   workspaceId: string,

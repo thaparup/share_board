@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { CreateMember, createMemberSchema } from "../schema/member.schema";
 
 const prisma = new PrismaClient();
 
@@ -78,7 +77,6 @@ export async function stats(req: Request, res: Response) {
       totalMembers: workspace._count.workspaceMember,
       members: workspace.workspaceMember,
     }));
-    console.log(workspaces);
     res.status(200).json({
       message: "Dashboard stats",
       data: {

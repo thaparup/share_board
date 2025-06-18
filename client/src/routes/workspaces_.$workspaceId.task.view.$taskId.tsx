@@ -1,10 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useFetchTaskById } from '../Api-Client/task';
 import { Task } from '../types/task.types';
 import Body from '../components/Body';
 import { Check, } from 'lucide-react';
 
 export const Route = createFileRoute('/workspaces_/$workspaceId/task/view/$taskId')({
+  beforeLoad: async ({ context }) => {
+    if (context.auth.user === null && !context.auth.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+  },
   loader: async ({ params }) => {
     return {
       taskId: params.taskId,
