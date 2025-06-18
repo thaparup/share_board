@@ -1,6 +1,6 @@
 import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { RouterProvider, createRouter, } from '@tanstack/react-router'
 import './index.css'
 import { Toaster } from 'react-hot-toast'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
@@ -35,11 +35,19 @@ export const queryClient = new QueryClient({
 function InnerApp() {
   const auth = useAuthStore()
   const [ready, setReady] = React.useState(false)
+  const currentPath = window.location.pathname
+
+
+
 
   React.useEffect(() => {
-    auth.fetchUser().finally(() => {
+    const skipPaths = ['/', '/login']
+
+    if (!skipPaths.includes(currentPath)) {
+      auth.fetchUser().finally(() => setReady(true))
+    } else {
       setReady(true)
-    })
+    }
   }, [])
 
   if (!ready) return <div>Loading...</div>

@@ -24,6 +24,7 @@ type AuthStoreType = {
   login: (user: User) => void;
   logout: () => void;
   fetchUser: () => Promise<void>;
+  // fetchUser: () => Promise<boolean>;
 };
 
 type UsersResponse = {

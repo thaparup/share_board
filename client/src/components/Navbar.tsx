@@ -1,4 +1,4 @@
-import { Link, redirect, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "../store/auth.store";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -16,10 +16,7 @@ import toast from "react-hot-toast";
 const Navbar = () => {
     const navigation = useNavigate();
 
-    // const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-    // const user = useAuthStore((state) => state.user)
-    // const logout = useAuthStore((state) => state.logout)
-    const { user, isAuthenticated, logout } = useAuthStore()
+    const { user, isAuthenticated, logout } = useAuthStore();
     const logoutMutation = useMutationLogout();
 
     const getUserInitials = () => {
@@ -32,11 +29,8 @@ const Navbar = () => {
 
     return (
         <nav className="h-full border-b-[1px] border-gray-700 sticky ">
-
-            <div
-                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-full justify-between max-[400px]:justify-center max-[400px]:flex-col max-[400px]:gap-1"
-            >
-                <Link to='/' className="flex items-center space-x-2 ">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-full justify-between max-[400px]:justify-center max-[400px]:flex-col max-[400px]:gap-1">
+                <Link to="/" className="flex items-center space-x-2 ">
                     <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-pink-500 rounded-lg flex items-center justify-center">
                         <CheckCircle className="w-5 h-5 text-white" />
                     </div>
@@ -92,8 +86,7 @@ const Navbar = () => {
                                             onSuccess() {
                                                 toast.success("Log out");
                                                 logout();
-                                                navigation({ to: '/login' })
-
+                                                navigation({ to: "/login" });
                                             },
                                         });
                                     }}
@@ -108,7 +101,6 @@ const Navbar = () => {
                 )}
             </div>
         </nav>
-
     );
 };
 
