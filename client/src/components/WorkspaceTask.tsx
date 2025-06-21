@@ -1,8 +1,8 @@
-import { Task } from '../types/task.types'
 import { Button } from './ui/button'
 import { useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import TaskCard from './TaskCard'
+import { Task } from '../types/workspace.types'
 
 type Props = {
     tasks: Task[]

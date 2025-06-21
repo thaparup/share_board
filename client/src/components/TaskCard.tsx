@@ -1,8 +1,8 @@
 import { format } from "date-fns";
 import React from "react";
-import { Task } from "../types/task.types";
 import { Users, Calendar, ListTodo } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { Task } from "../types/workspace.types";
 
 
 export const priorityColors: Record<Task["priority"], string> = {
@@ -52,7 +52,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
 
                 </div>
 
-                <p className="text-gray-600 mt-2 text-sm">{task.description}</p>
+                <p className="text-gray-600 mt-2 text-sm line-clamp-3">{task.description}</p>
 
                 <div className="mt-4 flex flex-col gap-2 text-sm  border-t border-gray-100">
                     <div className="flex items-center gap-2 text-gray-500 mt-2">
@@ -77,16 +77,17 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
                     <div className="flex items-center gap-2 text-gray-600">
                         <Users className="w-4 h-4" />
                         <span>
-                            {task.totalTodos}{" "}
-                            {task.totalMembers === 1 ? "Assigned member" : "Assigned members"}
+
+                            {task._count.TaskAssignment}{" "}
+                            {task._count.TaskAssignment === 1 ? "Assigned Member" : "Assigned Members"}
                         </span>
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-600">
                         <ListTodo className="w-4 h-4" />
                         <span>
-                            {task.totalMembers}{" "}
-                            {task.totalMembers === 1 ? "Todo" : "Todos"}
+                            {task._count.TaskTodoCheckList}{" "}
+                            {task._count.TaskTodoCheckList === 1 ? "Todo" : "Todos"}
                         </span>
                     </div>
                 </div>

@@ -43,16 +43,7 @@ const Sidebar = () => {
                         <li key={name}>
                             <Link
                                 to={to}
-                                onClick={() => {
-                                    logoutMutation.mutate(undefined, {
-                                        onSuccess() {
-                                            logout()
-                                            toast.success("Logged out")
-                                            navigation({ to: "/login" })
 
-                                        },
-                                    });
-                                }}
                                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-amber-100 text-gray-300/80 hover:text-amber-600 transition-colors font-medium"
                             >
                                 <span className="text-amber-600">{icon}</span>

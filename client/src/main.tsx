@@ -1,24 +1,22 @@
-import React, { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter, } from '@tanstack/react-router'
-import './index.css'
-import { Toaster } from 'react-hot-toast'
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
-import { routeTree } from './routeTree.gen'
-import { useAuthStore } from './store/auth.store'
-
+import React, { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import "./index.css";
+import { Toaster } from "react-hot-toast";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { routeTree } from "./routeTree.gen";
+import { useAuthStore } from "./store/auth.store";
 
 const router = createRouter({
   routeTree,
   context: {
     auth: undefined!,
   },
-})
+});
 
-
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router
+    router: typeof router;
   }
 }
 
@@ -28,50 +26,38 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       retry: false,
       // etc.
-    }
-  }
-})
+    },
+  },
+});
 
 function InnerApp() {
-  const auth = useAuthStore()
-  const [ready, setReady] = React.useState(false)
-  const currentPath = window.location.pathname
-
-
-
+  const auth = useAuthStore();
+  const [ready, setReady] = React.useState(false);
+  const currentPath = window.location.pathname;
 
   React.useEffect(() => {
-    const skipPaths = ['/', '/login']
+    auth.fetchUser().finally(() => {
+      setReady(true);
+    });
+  }, []);
+  if (!ready) return <div>Loading...</div>;
 
-    if (!skipPaths.includes(currentPath)) {
-      auth.fetchUser().finally(() => setReady(true))
-    } else {
-      setReady(true)
-    }
-  }, [])
-
-  if (!ready) return <div>Loading...</div>
-
-  return <RouterProvider router={router} context={{ auth }} />
+  return <RouterProvider router={router} context={{ auth }} />;
 }
-
-
-
 
 function App() {
-  return <InnerApp />
+  return <InnerApp />;
 }
 
-
-const rootElement = document.getElementById('root')!
+const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
+  const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <App />
         <Toaster position="top-right" />
       </QueryClientProvider>
-    </StrictMode>,
-  )
+    </StrictMode>
+  );
 }

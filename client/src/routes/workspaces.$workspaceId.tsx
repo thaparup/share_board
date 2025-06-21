@@ -27,7 +27,7 @@ function RouteComponent() {
     isError,
     error,
   } = useQueryFetchWorkspaceById(workspaceId);
-
+  console.log(workspace)
   if (isLoading)
     return (
       <Body>

@@ -181,43 +181,23 @@ export const getWorkspaceById = async (req: Request, res: Response) => {
     });
 
     const tasks = await prisma.task.findMany({
-      where: {
-        workspaceId: workspaceId,
+      where: { workspaceId },
+      include: {
+        _count: {
+          select: {
+            TaskTodoCheckList: true,
+            TaskAssignment: true,
+          },
+        },
       },
     });
-    const numberOfTodos = await prisma.taskTodoCheckList.findMany({
-      where: { taskId: { in: tasks.map((task) => task.id) } },
+
+    console.log("tasks length", tasks[0]);
+    const workspaceMembers = await prisma.workspaceMember.findMany({
+      where: { workspaceId: workspaceId },
     });
-    console.log(numberOfTodos);
-    const todosDetail = numberOfTodos.reduce((acc, curr) => {
-      if (curr.taskId !== null) {
-        acc[curr.taskId] = (acc[curr.taskId] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>);
 
-    const assignedUsers = await Promise.all(
-      tasks.map(async ({ id }) => {
-        const count = await prisma.taskAssignment.count({
-          where: {
-            taskId: id,
-          },
-        });
-
-        return { id, count };
-      })
-    );
-
-    const tasksInDetail = tasks.flatMap((task) => {
-      const matchedUsers = assignedUsers.filter((user) => user.id === task.id);
-      return matchedUsers.map((user) => ({
-        ...task,
-        totalMembers: user.count,
-        totalTodos: todosDetail[task.id],
-      }));
-    });
-    console.log(tasksInDetail);
-    const formattedMembers = members.map((member) => ({
+    const formattedMembers = workspaceMembers.map((member) => ({
       id: member.id,
       memberId: member.memberId,
       name: member.memberName,
@@ -225,11 +205,12 @@ export const getWorkspaceById = async (req: Request, res: Response) => {
       avatarImage: member.memberAvatarImage,
       role: member.role,
     }));
+
     res.status(200).json({
       message: "Workspace fetched",
       data: {
         workspace: workspace,
-        tasks: tasksInDetail,
+        tasks: tasks,
         members: formattedMembers,
       },
     });

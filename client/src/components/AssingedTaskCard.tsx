@@ -67,7 +67,7 @@ const AssignedTaskCard: React.FC<TaskCardProps> = ({ task, workspaceId }) => {
 
                 </div>
 
-                <p className="text-gray-600 mt-2 text-sm">{task.description}</p>
+                <p className="text-gray-600 mt-2 text-sm line-clamp-3">{task.description}</p>
 
                 <div className="mt-4 flex flex-col gap-2 text-sm  border-t border-gray-100">
                     <div className="flex items-center gap-2 text-gray-500 mt-2">

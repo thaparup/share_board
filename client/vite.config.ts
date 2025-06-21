@@ -5,7 +5,8 @@ import tailwindcss from "@tailwindcss/postcss";
 
 export default defineConfig(({ mode }) => {
   // Load env from the client folder based on the mode (development, production, etc.)
-  const env = loadEnv(mode, "./client/.env.local", "");
+  // const env = loadEnv(mode, "./client/", "");
+  const env = loadEnv(mode, ".", "");
 
   return {
     plugins: [
@@ -20,7 +21,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         "/api": {
-          target: "http://localhost:4000",
+          target: env.VITE_BASE_URL,
           changeOrigin: true,
           secure: false,
         },

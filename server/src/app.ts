@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 
 const app = express();
@@ -13,6 +13,9 @@ app.use(
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
+app.use("/health", (req: Request, res: Response) => {
+  res.send({ message: "Server is up and running" });
+});
 
 //Routes
 import workspaceRouter from "./routes/workspace.route";

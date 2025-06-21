@@ -9,17 +9,78 @@ import fs from "node:fs";
 import { v2 as cloudinary } from "cloudinary";
 const prisma = new PrismaClient();
 
+// export async function createUser(req: Request, res: Response) {
+//   const existingUser = await prisma.user.findUnique({
+//     where: { email: req.body.email },
+//   });
+
+//   if (existingUser) {
+//     res.status(409).json({
+//       message: "Email already in use",
+//       data: null,
+//     });
+//     return;
+//   }
+
+//   if (req.file) {
+//     try {
+//       cloudinary.config({
+//         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//         api_key: process.env.CLOUDINARY_API_KEY,
+//         api_secret: process.env.CLOUDINARY_API_SECTRET,
+//       });
+//       const result = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "avatars",
+//       });
+
+//       req.body.avatarImage = result.secure_url || "";
+//     } catch (error) {
+//       fs.unlinkSync(req.file.path);
+//       console.error("Cloudinary upload failed:", error);
+//       res.status(500).json({ message: "Image upload failed" });
+//       return;
+//     } finally {
+//       fs.unlinkSync(req.file.path);
+//     }
+//   }
+
+//   const parsed = registerUserSchema.safeParse(req.body);
+//   if (!parsed.success) {
+//     res
+//       .status(400)
+//       .json({ message: "Invalid data", errors: parsed.error.errors });
+//     return;
+//   }
+
+//   try {
+//     const hashedPassword = await bcrypt.hash(parsed.data.password, 10);
+//     const user = await prisma.user.create({
+//       data: {
+//         name: parsed.data.name,
+//         email: parsed.data.email,
+//         password: hashedPassword,
+//         avatarImage: parsed.data.avatarImage,
+//       },
+//     });
+//     const { password, ...safeUser } = user;
+//     res.status(201).json({ message: "User created", data: { user: safeUser } });
+//     return;
+//   } catch (error) {
+//     console.error("User creation failed:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// }
+
 export async function createUser(req: Request, res: Response) {
   const existingUser = await prisma.user.findUnique({
     where: { email: req.body.email },
   });
 
   if (existingUser) {
-    res.status(409).json({
+    return res.status(409).json({
       message: "Email already in use",
       data: null,
     });
-    return;
   }
 
   if (req.file) {
@@ -29,27 +90,28 @@ export async function createUser(req: Request, res: Response) {
         api_key: process.env.CLOUDINARY_API_KEY,
         api_secret: process.env.CLOUDINARY_API_SECTRET,
       });
-      const result = await cloudinary.uploader.upload(req.file.path, {
+
+      // Convert buffer to base64 string
+      const base64Image = `data:${
+        req.file.mimetype
+      };base64,${req.file.buffer.toString("base64")}`;
+
+      const result = await cloudinary.uploader.upload(base64Image, {
         folder: "avatars",
       });
 
       req.body.avatarImage = result.secure_url || "";
     } catch (error) {
-      fs.unlinkSync(req.file.path);
       console.error("Cloudinary upload failed:", error);
-      res.status(500).json({ message: "Image upload failed" });
-      return;
-    } finally {
-      fs.unlinkSync(req.file.path);
+      return res.status(500).json({ message: "Image upload failed" });
     }
   }
 
   const parsed = registerUserSchema.safeParse(req.body);
   if (!parsed.success) {
-    res
+    return res
       .status(400)
       .json({ message: "Invalid data", errors: parsed.error.errors });
-    return;
   }
 
   try {
@@ -63,11 +125,12 @@ export async function createUser(req: Request, res: Response) {
       },
     });
     const { password, ...safeUser } = user;
-    res.status(201).json({ message: "User created", data: { user: safeUser } });
-    return;
+    return res
+      .status(201)
+      .json({ message: "User created", data: { user: safeUser } });
   } catch (error) {
     console.error("User creation failed:", error);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
 
